@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             CharacterClassSeeder::class,
             SphereSeeder::class,
             AreaSeeder::class,
+            BoatSeeder::class,
             UserSeeder::class,
         ]);
     }

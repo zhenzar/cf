@@ -118,13 +118,13 @@ class CharacterController extends Controller
         $areas = Area::orderBy('realm')->orderBy('name')->get()
             ->map(function ($area) use ($completed, $level) {
                 $area->completed = $completed->has($area->id);
-                $area->in_range = $level >= $area->min_level && $level <= $area->max_level;
-                $area->level_appropriate = $area->in_range && $area->max_level <= $level;
+                $area->is_all = $area->min_level === 1 && $area->max_level === 51;
+                $area->level_appropriate = $level >= $area->min_level && $area->max_level <= $level;
                 return $area;
             })
-            // Hide areas the character is out of range for (unless already completed).
-            ->filter(fn ($a) => $a->in_range || $a->completed)
-            // Sort: level-appropriate first (max<=level), then wider in-range (max>level), then completed.
+            // Show: level-appropriate (max<=level), "All" areas (1-51), or already-completed.
+            ->filter(fn ($a) => $a->level_appropriate || $a->is_all || $a->completed)
+            // Sort: level-appropriate first, then All-range, then completed.
             ->sortBy(function ($a) {
                 if ($a->completed) return 2;
                 return $a->level_appropriate ? 0 : 1;
