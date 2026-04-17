@@ -51,7 +51,7 @@
                         @foreach ($areas as $area)
                             <tr @class([
                                 'bg-gray-50 text-gray-400' => $area->completed,
-                                'opacity-60' => ! $area->completed && ! $area->in_range,
+                                'opacity-70' => ! $area->completed && $area->is_all,
                             ])>
                                 <td class="px-4 py-2">
                                     <form method="POST" action="{{ route('characters.areas.toggle', $character) }}">
@@ -75,8 +75,8 @@
                                     {{ $area->name }}
                                     @if ($area->completed)
                                         <span class="ml-2 text-xs text-green-600">✓ completed</span>
-                                    @elseif (! $area->in_range)
-                                        <span class="ml-2 text-xs text-gray-400">out of range</span>
+                                    @elseif ($area->is_all)
+                                        <span class="ml-2 text-xs text-gray-400">wide range</span>
                                     @endif
                                 </td>
                             </tr>
