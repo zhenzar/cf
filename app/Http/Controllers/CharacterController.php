@@ -116,11 +116,20 @@ class CharacterController extends Controller
         if (! in_array($filter, ['in-range', 'out-of-range', 'completed', 'all'], true)) {
             $filter = 'in-range';
         }
+        $q = trim((string) $request->query('q', ''));
 
         $completed = $character->areas()->pluck('areas.id', 'areas.id');
         $level = $character->level;
 
-        $all = Area::orderBy('realm')->orderBy('name')->get()
+        $query = Area::orderBy('realm')->orderBy('name');
+        if ($q !== '') {
+            $query->where(function ($w) use ($q) {
+                $w->where('name', 'like', "%{$q}%")
+                  ->orWhere('realm', 'like', "%{$q}%");
+            });
+        }
+
+        $all = $query->get()
             ->map(function ($area) use ($completed, $level) {
                 $area->completed = $completed->has($area->id);
                 $area->is_all = $area->min_level === 1 && $area->max_level === 51;
@@ -157,6 +166,7 @@ class CharacterController extends Controller
             'areas' => $areas,
             'filter' => $filter,
             'counts' => $counts,
+            'q' => $q,
         ]);
     }
 

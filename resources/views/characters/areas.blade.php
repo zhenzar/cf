@@ -27,7 +27,7 @@
 
             <div class="mb-4 bg-white rounded-lg shadow-sm p-1 flex gap-1">
                 @foreach ($tabs as $key => $tab)
-                    <a href="{{ route('characters.areas', ['character' => $character, 'filter' => $key]) }}"
+                    <a href="{{ route('characters.areas', ['character' => $character, 'filter' => $key, 'q' => $q ?: null]) }}"
                        @class([
                            'flex-1 text-center px-4 py-2 rounded-md text-sm font-medium transition',
                            'bg-indigo-600 text-white' => $filter === $key,
@@ -42,6 +42,23 @@
                     </a>
                 @endforeach
             </div>
+
+            <form method="GET" action="{{ route('characters.areas', $character) }}" class="mb-4 flex gap-2">
+                <input type="hidden" name="filter" value="{{ $filter }}">
+                <input type="search" name="q" value="{{ $q }}"
+                       placeholder="Search area or realm..."
+                       class="flex-1 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                <button type="submit"
+                        class="px-4 py-2 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-700">
+                    Search
+                </button>
+                @if ($q !== '')
+                    <a href="{{ route('characters.areas', ['character' => $character, 'filter' => $filter]) }}"
+                       class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 self-center">
+                        Clear
+                    </a>
+                @endif
+            </form>
 
             <div class="bg-white shadow-sm sm:rounded-lg">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -63,6 +80,8 @@
                                     <form method="POST" action="{{ route('characters.areas.toggle', $character) }}">
                                         @csrf
                                         <input type="hidden" name="area_id" value="{{ $area->id }}">
+                                        <input type="hidden" name="filter" value="{{ $filter }}">
+                                        <input type="hidden" name="q" value="{{ $q }}">
                                         <input type="checkbox"
                                                onchange="this.form.submit()"
                                                @checked($area->completed)
