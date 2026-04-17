@@ -17,24 +17,30 @@
             @endif
 
             @php
-                $completedCount = $areas->where('completed', true)->count();
-                $inRangeCount = $areas->where('in_range', true)->where('completed', false)->count();
-                $outOfRangeCount = $areas->where('in_range', false)->where('completed', false)->count();
+                $tabs = [
+                    'in-range' => ['label' => 'In range', 'color' => 'indigo'],
+                    'out-of-range' => ['label' => 'Out of range', 'color' => 'gray'],
+                    'completed' => ['label' => 'Completed', 'color' => 'green'],
+                    'all' => ['label' => 'All', 'color' => 'slate'],
+                ];
             @endphp
 
-            <div class="mb-4 grid grid-cols-3 gap-4 text-sm">
-                <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="text-xs uppercase text-gray-500">In range</div>
-                    <div class="text-2xl font-semibold text-indigo-600">{{ $inRangeCount }}</div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="text-xs uppercase text-gray-500">Out of range</div>
-                    <div class="text-2xl font-semibold text-gray-400">{{ $outOfRangeCount }}</div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="text-xs uppercase text-gray-500">Completed</div>
-                    <div class="text-2xl font-semibold text-green-600">{{ $completedCount }} / {{ $areas->count() }}</div>
-                </div>
+            <div class="mb-4 bg-white rounded-lg shadow-sm p-1 flex gap-1">
+                @foreach ($tabs as $key => $tab)
+                    <a href="{{ route('characters.areas', ['character' => $character, 'filter' => $key]) }}"
+                       @class([
+                           'flex-1 text-center px-4 py-2 rounded-md text-sm font-medium transition',
+                           'bg-indigo-600 text-white' => $filter === $key,
+                           'text-gray-600 hover:bg-gray-100' => $filter !== $key,
+                       ])>
+                        {{ $tab['label'] }}
+                        <span @class([
+                            'ml-1 text-xs',
+                            'text-indigo-200' => $filter === $key,
+                            'text-gray-400' => $filter !== $key,
+                        ])>{{ $counts[$key] }}</span>
+                    </a>
+                @endforeach
             </div>
 
             <div class="bg-white shadow-sm sm:rounded-lg">

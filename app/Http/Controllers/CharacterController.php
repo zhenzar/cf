@@ -108,32 +108,55 @@ class CharacterController extends Controller
             ->with('status', 'Character updated.');
     }
 
-    public function areas(Character $character)
+    public function areas(Request $request, Character $character)
     {
         abort_unless($character->user_id === Auth::id(), 403);
+
+        $filter = $request->query('filter', 'in-range');
+        if (! in_array($filter, ['in-range', 'out-of-range', 'completed', 'all'], true)) {
+            $filter = 'in-range';
+        }
 
         $completed = $character->areas()->pluck('areas.id', 'areas.id');
         $level = $character->level;
 
-        $areas = Area::orderBy('realm')->orderBy('name')->get()
+        $all = Area::orderBy('realm')->orderBy('name')->get()
             ->map(function ($area) use ($completed, $level) {
                 $area->completed = $completed->has($area->id);
                 $area->is_all = $area->min_level === 1 && $area->max_level === 51;
                 $area->level_appropriate = $level >= $area->min_level && $area->max_level <= $level;
+                $area->in_range = $area->level_appropriate || $area->is_all;
                 return $area;
-            })
-            // Show: level-appropriate (max<=level), "All" areas (1-51), or already-completed.
-            ->filter(fn ($a) => $a->level_appropriate || $a->is_all || $a->completed)
-            // Sort: level-appropriate first, then All-range, then completed.
+            });
+
+        $counts = [
+            'in-range' => $all->where('in_range', true)->where('completed', false)->count(),
+            'out-of-range' => $all->where('in_range', false)->where('completed', false)->count(),
+            'completed' => $all->where('completed', true)->count(),
+            'all' => $all->count(),
+        ];
+
+        $areas = match ($filter) {
+            'in-range' => $all->filter(fn ($a) => $a->in_range && ! $a->completed),
+            'out-of-range' => $all->filter(fn ($a) => ! $a->in_range && ! $a->completed),
+            'completed' => $all->filter(fn ($a) => $a->completed),
+            'all' => $all,
+        };
+
+        $areas = $areas
             ->sortBy(function ($a) {
                 if ($a->completed) return 2;
-                return $a->level_appropriate ? 0 : 1;
+                if ($a->level_appropriate) return 0;
+                if ($a->is_all) return 1;
+                return 3; // out of range last within 'all'
             })
             ->values();
 
         return view('characters.areas', [
             'character' => $character,
             'areas' => $areas,
+            'filter' => $filter,
+            'counts' => $counts,
         ]);
     }
 
