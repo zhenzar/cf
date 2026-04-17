@@ -18,43 +18,33 @@
 
             @php
                 $tabs = [
-                    'in-range' => ['label' => 'In range', 'color' => 'indigo'],
-                    'out-of-range' => ['label' => 'Out of range', 'color' => 'gray'],
-                    'completed' => ['label' => 'Completed', 'color' => 'green'],
-                    'all' => ['label' => 'All', 'color' => 'slate'],
+                    'in-range' => 'In range',
+                    'out-of-range' => 'Out of range',
+                    'completed' => 'Completed',
+                    'all' => 'All',
                 ];
             @endphp
 
-            <div class="mb-4 bg-white rounded-lg shadow-sm p-1 flex gap-1">
-                @foreach ($tabs as $key => $tab)
-                    <a href="{{ route('characters.areas', ['character' => $character, 'filter' => $key, 'q' => $q ?: null]) }}"
-                       @class([
-                           'flex-1 text-center px-4 py-2 rounded-md text-sm font-medium transition',
-                           'bg-indigo-600 text-white' => $filter === $key,
-                           'text-gray-600 hover:bg-gray-100' => $filter !== $key,
-                       ])>
-                        {{ $tab['label'] }}
-                        <span @class([
-                            'ml-1 text-xs',
-                            'text-indigo-200' => $filter === $key,
-                            'text-gray-400' => $filter !== $key,
-                        ])>{{ $counts[$key] }}</span>
-                    </a>
-                @endforeach
-            </div>
+            <form method="GET" action="{{ route('characters.areas', $character) }}" class="mb-4 flex flex-wrap gap-2 items-center">
+                <select name="filter" onchange="this.form.submit()"
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
+                    @foreach ($tabs as $key => $label)
+                        <option value="{{ $key }}" @selected($filter === $key)>
+                            {{ $label }} ({{ $counts[$key] }})
+                        </option>
+                    @endforeach
+                </select>
 
-            <form method="GET" action="{{ route('characters.areas', $character) }}" class="mb-4 flex gap-2">
-                <input type="hidden" name="filter" value="{{ $filter }}">
                 <input type="search" name="q" value="{{ $q }}"
                        placeholder="Search area or realm..."
-                       class="flex-1 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                       class="flex-1 min-w-[200px] border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
                 <button type="submit"
                         class="px-4 py-2 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-700">
                     Search
                 </button>
                 @if ($q !== '')
                     <a href="{{ route('characters.areas', ['character' => $character, 'filter' => $filter]) }}"
-                       class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 self-center">
+                       class="text-sm text-gray-600 hover:text-gray-900">
                         Clear
                     </a>
                 @endif
