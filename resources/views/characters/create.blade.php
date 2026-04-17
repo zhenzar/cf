@@ -34,12 +34,28 @@
                         alignment: '{{ old('alignment') }}',
                         get race() { return this.races.find(r => r.id == this.raceId) },
                         get klass() { return this.classes.find(c => c.id == this.classId) },
+                        get availableClasses() {
+                            if (!this.race) return this.classes;
+                            return this.classes.filter(c => c.alignments.some(a => this.race.alignments.includes(a)));
+                        },
+                        isClassAvailable(c) {
+                            if (!this.race) return true;
+                            return c.alignments.some(a => this.race.alignments.includes(a));
+                        },
                         get allowedAlignments() {
                             if (!this.race || !this.klass) return [];
                             return this.race.alignments.filter(a => this.klass.alignments.includes(a));
                         },
                     }"
-                     x-init="$watch('allowedAlignments', val => { if (!val.includes(alignment)) alignment = '' })">
+                     x-init="
+                        $watch('raceId', () => {
+                            if (classId && !isClassAvailable(klass)) classId = '';
+                        });
+                        $watch('allowedAlignments', val => {
+                            if (val.length === 1) { alignment = val[0]; return; }
+                            if (!val.includes(alignment)) alignment = '';
+                        });
+                     ">
 
                     <form method="POST" action="{{ route('characters.store') }}" class="space-y-6">
                         @csrf
@@ -71,10 +87,13 @@
                             <select id="character_class_id" name="character_class_id" x-model="classId" required
                                     class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                 <option value="">-- Select class --</option>
-                                @foreach ($classes as $class)
-                                    <option value="{{ $class->id }}">{{ $class->name }}</option>
-                                @endforeach
+                                <template x-for="c in availableClasses" :key="c.id">
+                                    <option :value="c.id" x-text="c.name"></option>
+                                </template>
                             </select>
+                            <p class="mt-1 text-xs text-gray-500" x-show="race && availableClasses.length < classes.length">
+                                Some classes are hidden because they don't match <span class="font-semibold" x-text="race?.name"></span>'s alignment.
+                            </p>
                             <p class="mt-1 text-xs text-gray-500" x-show="klass" x-text="klass?.description"></p>
                             <x-input-error :messages="$errors->get('character_class_id')" class="mt-2" />
                         </div>
@@ -108,6 +127,9 @@
                             </div>
                             <p class="mt-2 text-sm text-gray-500" x-show="!raceId || !classId">
                                 Select race and class to see available alignments.
+                            </p>
+                            <p class="mt-2 text-sm text-indigo-600" x-show="raceId && classId && allowedAlignments.length === 1">
+                                Alignment is locked to <span class="font-semibold capitalize" x-text="allowedAlignments[0]"></span> for this race/class.
                             </p>
                             <p class="mt-2 text-sm text-red-600" x-show="raceId && classId && allowedAlignments.length === 0">
                                 This race/class combination has no compatible alignment.
