@@ -1,72 +1,72 @@
 | 40 - 51 | Dhuuston          - Subterranean Spire
 | 40 - 51 | Neajess           - Temple of Qhabiszan             
 |   All   | Rahsael/Ishuli    - The Shadow Peak Pass
-| 25 - 45 | Rarywey           - Aubade
-|   All   | Ishuli            - Saurian Village
-| 20 - 51 | Thaedan           - Workshop of the Master Enchanter
+| 25 - 45 | Rarywey           - Aubade #http://wiki.qhcf.net/index.php?title=Aubade
+|   All   | Ishuli            - Saurian Village #http://wiki.qhcf.net/index.php?title=Saurian_Village
+| 20 - 51 | Thaedan           - Workshop of the Master Enchanter #http://wiki.qhcf.net/index.php?title=The_Ancient_Road_to_the_Wastes
 | 30 - 51 | Whildur           - Evergrove Outpost
-| 20 - 40 | Rahsael           - The Buried Battlefield
-| 25 - 45 | Ishuli            - Goblin Outpost
-| 10 - 51 | Verathi           - Aturi Timberlands
-| 15 - 35 | Drehir            - Dhumlar-Ko
-|   All   | Nythos            - Targeth's Manor
-| 15 - 35 | Destuvius         - The Forgotten Island
+| 20 - 40 | Rahsael           - The Buried Battlefield #http://wiki.qhcf.net/index.php?title=The_Buried_Battlefield
+| 25 - 45 | Ishuli            - Goblin Outpost #http://wiki.qhcf.net/index.php?title=Goblin_Outpost
+| 10 - 51 | Verathi           - Aturi Timberlands #http://wiki.qhcf.net/index.php?title=Aturi_Timberlands
+| 15 - 35 | Drehir            - Dhumlar-Ko #http://wiki.qhcf.net/index.php?title=Dhumlar
+|   All   | Nythos            - Targeth's Manor #http://wiki.qhcf.net/index.php?title=Targeth%27s_Manor
+| 15 - 35 | Destuvius         - The Forgotten Island #http://wiki.qhcf.net/index.php?title=StrangeIsland
 | 20 - 30 | Ysaloerye         - The Ancient Plain Stones
-|   All   | Nreykre           - The Frozen Gorge
-| 10 - 51 | Nnaeshuk          - Enpolad's Game Garden
-| 35 - 50 | Malakhi           - Eil Shaeria
-|   All   | Laurella          - Darsylon
-|  1 - 30 | Laurella          - The Vale of Arendyl
-| 40 - 51 | Fjarn             - Abandoned Siege Encampment
-|   All   | Corrlaan          - The Arena
-| 10 - 51 | Strienat          - Ancient Emerald Forest
-|  5 - 20 | Yean              - Udgaardian Plains
-| 15 - 40 | Farigno           - Khardrath's Planar Sanctum
-| 11 - 51 | Aarn/Rayihn       - The Consortium
-| 35 - 51 | Thrak/Sebeok/Kast - High Lord's Keep
+|   All   | Nreykre           - The Frozen Gorge #http://wiki.qhcf.net/index.php?title=The_Frozen_Gorge
+| 10 - 51 | Nnaeshuk          - Enpolad's Game Garden #http://wiki.qhcf.net/index.php?title=EnpoladsGameGarden
+| 35 - 50 | Malakhi           - Eil Shaeria #http://wiki.qhcf.net/index.php?title=Eil_Shaeria
+|   All   | Laurella          - Darsylon #http://wiki.qhcf.net/index.php?title=Darsylon
+|  1 - 30 | Laurella          - The Vale of Arendyl #http://wiki.qhcf.net/index.php?title=TheValeofArendyl
+| 40 - 51 | Fjarn             - Abandoned Siege Encampment #http://wiki.qhcf.net/index.php?title=Abandoned_Siege_Encampment
+|   All   | Corrlaan          - The Arena #http://wiki.qhcf.net/index.php?title=The_Arena
+| 10 - 51 | Strienat          - Ancient Emerald Forest #http://wiki.qhcf.net/index.php?title=Ancient_Emerald_Forest
+|  5 - 20 | Yean              - Udgaardian Plains #http://wiki.qhcf.net/index.php?title=Udgaardian_Plains
+| 15 - 40 | Farigno           - Khardrath's Planar Sanctum #http://wiki.qhcf.net/index.php?title=Khardrath%27s_Planar_Sanctum
+| 11 - 51 | Aarn/Rayihn       - The Consortium #http://wiki.qhcf.net/index.php?title=The_Consortium
+| 35 - 51 | Thrak/Sebeok/Kast - High Lord's Keep #http://wiki.qhcf.net/index.php?title=HighLords
 |  1 - 5  | Crellan           - The Academy
-|   All   | Crysseara         - The Seaport of Hamsah Mu'tazz
-| 40 - 51 | Nimbus/Corrlaan   - Lower Cragstone
-| 10 - 51 | Twist             - Forest of NoWhere
-|   All   | Desmonn Kinnt     - Upper Cragstone
-| 10 - 51 | Justin            - The Sea of Despair
-| 30 - 51 | Justin            - The Coral Head
+|   All   | Crysseara         - The Seaport of Hamsah Mu'tazz #http://wiki.qhcf.net/index.php?title=The_Seaport_of_Hamsah_Mu%27tazz
+| 40 - 51 | Nimbus/Corrlaan   - Lower Cragstone #http://wiki.qhcf.net/index.php?title=Lower_Cragstone
+| 10 - 51 | Twist             - Forest of NoWhere #http://wiki.qhcf.net/index.php?title=ForestOfNoWhere
+|   All   | Desmonn Kinnt     - Upper Cragstone #http://wiki.qhcf.net/index.php?title=Upper_Cragstone
+| 10 - 51 | Justin            - The Sea of Despair #http://wiki.qhcf.net/index.php?title=SeaOfDespair
+| 30 - 51 | Justin            - The Coral Head #http://wiki.qhcf.net/index.php?title=CoralHead
 |   All   | Bria/Ysaloerye    - Northern Foothills
-| 25 - 40 | Galadriel         - The Plains of Arendyl
-| 15 - 40 | Muuloc            - Coven of Dralkar Wood
-| 15 - 30 | Dreaa             - Mansion of Twilight
-| 10 - 45 | Andrlos/Thrak     - Loch Terradian
-|  1 - 15 | Choranek          - Amaranthian Forest
-| 40 - 51 | Phaelim           - Ruins of Maethien
-|  6 - 30 | Grurk             - Forgotten Crypts
-| 11 - 25 | Soucivi           - Keep of the Fhalaugash
-| 20 - 40 | Sevarecan         - Ruins of Delar-Tol
-| 11 - 51 | Quezzumpliet      - The Fields of Balator
-| 35 - 51 | Phaelim           - Maethien
-|  1 - 5  | Iunna             - Caravans of the Jhaana
-| 25 - 51 | Gherian           - Delar-Tol
-| 25 - 35 | Sabiene           - The Village of Azuremain
-| 30 - 51 | Rogardian/ShaidarH - The Northern Mountains
-| 30 - 51 | Blachmianan       - Dra'Melkhur
-|  1 - 15 | Trasthe           - Forest of Prosimy
-| 20 - 35 | Mortimor          - Hidden Forest
+| 25 - 40 | Galadriel         - The Plains of Arendyl #http://wiki.qhcf.net/index.php?title=PlainsOfArendyl
+| 15 - 40 | Muuloc            - Coven of Dralkar Wood #http://wiki.qhcf.net/index.php?title=Coven_of_Dralkar_Wood
+| 15 - 30 | Dreaa             - Mansion of Twilight #http://wiki.qhcf.net/index.php?title=Mansion_of_Twilight
+| 10 - 45 | Andrlos/Thrak     - Loch Terradian #http://wiki.qhcf.net/index.php?title=Loch_Terradian
+|  1 - 15 | Choranek          - Amaranthian Forest #http://wiki.qhcf.net/index.php?title=Amaranthian_Forest
+| 40 - 51 | Phaelim           - Ruins of Maethien #http://wiki.qhcf.net/index.php?title=RuinsOfMaethien
+|  6 - 30 | Grurk             - Forgotten Crypts #http://wiki.qhcf.net/index.php?title=Forgotten_Crypts
+| 11 - 25 | Soucivi           - Keep of the Fhalaugash #http://wiki.qhcf.net/index.php?title=KeepoftheFhalaugash
+| 20 - 40 | Sevarecan         - Ruins of Delar-Tol #http://wiki.qhcf.net/index.php?title=Ruins_of_Delar-Tol
+| 11 - 51 | Quezzumpliet      - The Fields of Balator #http://wiki.qhcf.net/index.php?title=FieldsOfBalator
+| 35 - 51 | Phaelim           - Maethien #http://wiki.qhcf.net/index.php?title=Maethien
+|  1 - 5  | Iunna             - Caravans of the Jhaana #http://wiki.qhcf.net/index.php?title=Caravans
+| 25 - 51 | Gherian           - Delar-Tol #http://wiki.qhcf.net/index.php?title=DelarTol
+| 25 - 35 | Sabiene           - The Village of Azuremain #http://wiki.qhcf.net/index.php?title=AzureMain
+| 30 - 51 | Rogardian/ShaidarH - The Northern Mountains #http://wiki.qhcf.net/index.php?title=The_Northern_Mountains
+| 30 - 51 | Blachmianan       - Dra'Melkhur #http://wiki.qhcf.net/index.php?title=Dra%27Melkhur
+|  1 - 15 | Trasthe           - Forest of Prosimy #http://wiki.qhcf.net/index.php?title=Forest_of_Prosimy
+| 20 - 35 | Mortimor          - Hidden Forest #http://wiki.qhcf.net/index.php?title=HiddenForest
 | 20 - 30 | Shokai            - The Rocky Paths
-|   All   | Kastellyn         - Feanwyyn Weald
-|  1 - 10 | Beroxxus          - Troglodyte Caverns
+|   All   | Kastellyn         - Feanwyyn Weald #http://wiki.qhcf.net/index.php?title=Feanwyyn
+|  1 - 10 | Beroxxus          - Troglodyte Caverns #http://wiki.qhcf.net/index.php?title=TroglodyteCaverns
 | 30 - 51 | Zulghinlour       - The Skies of the Past
-| 10 - 20 | Calradian         - Gol'Galath
-|   All   | Noldruk           - South Dairein Settlement
-| 20 - 35 | Acallsho          - Moudrilar's Monastery
-|  1 - 20 | Iunna             - Village of Lallenyha
-|  5 - 35 | Thror             - The Ruins of Ostalagiah
-|   All   | Thror/Pico        - The Dwarf Forest
-| 11 - 51 | Thror             - The Citadel of Ostalagiah
-| 10 - 25 | Karithia          - Keep of the Righteous
-|  7 - 20 | Calradian         - The Stone's Embrace
-|  5 - 30 | Mayesha/ShDancer  - Ar'atouldain
-|  5 - 50 | Ishmael           - The Halfling Lands
-| 10 - 30 | Divox             - Blackwater Swamp
-|  5 - 51 | Thror/Grumorum    - Galadonian Settlement
+| 10 - 20 | Calradian         - Gol'Galath #http://wiki.qhcf.net/index.php?title=GolGalath
+|   All   | Noldruk           - South Dairein Settlement #http://wiki.qhcf.net/index.php?title=SouthDairein
+| 20 - 35 | Acallsho          - Moudrilar's Monastery #http://wiki.qhcf.net/index.php?title=MoudrilarMonastery
+|  1 - 20 | Iunna             - Village of Lallenyha #http://wiki.qhcf.net/index.php?title=VillageOfLallenyha
+|  5 - 35 | Thror             - The Ruins of Ostalagiah #http://wiki.qhcf.net/index.php?title=The_Ruins_of_Ostalagiah
+|   All   | Thror/Pico        - The Dwarf Forest #http://wiki.qhcf.net/index.php?title=DwarfForest
+| 11 - 51 | Thror             - The Citadel of Ostalagiah #http://wiki.qhcf.net/index.php?title=The_Citadel_of_Ostalagiah
+| 10 - 25 | Karithia          - Keep of the Righteous #http://wiki.qhcf.net/index.php?title=Keep_of_the_Righteous
+|  7 - 20 | Calradian         - The Stone's Embrace #http://wiki.qhcf.net/index.php?title=StonesEmbrace
+|  5 - 30 | Mayesha/ShDancer  - Ar'atouldain #http://wiki.qhcf.net/index.php?title=Aratouldain
+|  5 - 50 | Ishmael           - The Halfling Lands #http://wiki.qhcf.net/index.php?title=The_Halfling_Lands
+| 10 - 30 | Divox             - Blackwater Swamp #http://wiki.qhcf.net/index.php?title=BlackwaterSwamp
+|  5 - 51 | Thror/Grumorum    - Galadonian Settlement #http://wiki.qhcf.net/index.php?title=GaladonianSettlement
 |  1 - 20 | Vynmylak          - V'Dramir's Cove
 |  6 - 30 | Intronan          - The Bandit Stronghold
 | 20 - 40 | Saldradien        - Coastal Wetlands
@@ -74,89 +74,89 @@
 |   All   | Keniston/Leika    - The Tower of Sorcery
 |  1 - 20 | Kastellyn         - Temple of Loch Grynmear
 |   All   | Andaren           - The Open Plains
-|   All   | Sattanos/Orsil    - The Dragon Sea
+|   All   | Sattanos/Orsil    - The Dragon Sea #http://wiki.qhcf.net/index.php?title=DragonSea
 | 30 - 51 | Andaren           - The Skies above Thera
 | 10 - 51 | Proserpina        - The Oryx Steppes
 | 20 - 40 | Vahlen            - Felar Encampment
-| 35 - 51 | Mayesha           - Valley of Veran
+| 35 - 51 | Mayesha           - Valley of Veran #http://wiki.qhcf.net/index.php?title=Valley_of_Veran
 | 30 - 45 | Valguarnera       - Kteng's Laboratory
 | 30 - 51 | Arvam             - Mines of Zakiim
 | 30 - 45 | Gadinias          - The Dranettie Wood
-|   All   | Thror             - Grinning Skull Village
-|  1 - 20 | Shenara           - The Sewers of Seantryn Modan
-| 40 - 51 | Ashaxreyn         - Mount Calandaryl
-| 40 - 51 | Ashaxreyn         - The Underdark Sea
-| 20 - 30 | Jacynth           - Ship Graveyard
-| 10 - 35 | Guerric           - Western Aryth Ocean
-| 20 - 35 | Eryndorial        - Crystal Island
-|  5 - 25 | Taerin            - Outlying Villages
-| 10 - 30 | Braerus           - Azreth Wood
-| 15 - 30 | Astein            - Keep of Ceawlin
-| 25 - 40 | Zulghinlour       - The Talshidar Caves
-|   All   | Macheath          - Dagdan
+|   All   | Thror             - Grinning Skull Village #http://wiki.qhcf.net/index.php?title=GrinningSkulls
+|  1 - 20 | Shenara           - The Sewers of Seantryn Modan #http://wiki.qhcf.net/index.php?title=SeantrynSewers
+| 40 - 51 | Ashaxreyn         - Mount Calandaryl #http://wiki.qhcf.net/index.php?title=MountCalandaryl
+| 40 - 51 | Ashaxreyn         - The Underdark Sea #http://wiki.qhcf.net/index.php?title=UnderdarkSea
+| 20 - 30 | Jacynth           - Ship Graveyard #http://wiki.qhcf.net/index.php?title=ShipGraveyard
+| 10 - 35 | Guerric           - Western Aryth Ocean #http://wiki.qhcf.net/index.php?title=WesternAryth
+| 20 - 35 | Eryndorial        - Crystal Island #http://wiki.qhcf.net/index.php?title=CrystalIsland
+|  5 - 25 | Taerin            - Outlying Villages #http://wiki.qhcf.net/index.php?title=OutlyingVillages
+| 10 - 30 | Braerus           - Azreth Wood #http://wiki.qhcf.net/index.php?title=AzrethForest
+| 15 - 30 | Astein            - Keep of Ceawlin #http://wiki.qhcf.net/index.php?title=CeawlinKeep
+| 25 - 40 | Zulghinlour       - The Talshidar Caves #http://wiki.qhcf.net/index.php?title=TalshidarCaves
+|   All   | Macheath          - Dagdan #http://wiki.qhcf.net/index.php?title=Dagdan
 | 45 - 51 | Teiphicker        - Ruins of the Deep
-| 40 - 51 | Stellyx           - Whistlewood Swamp
-| 40 - 51 | Iukuru            - Pine Forest
-| 30 - 50 | Amlaruil          - Elemental Temple
+| 40 - 51 | Stellyx           - Whistlewood Swamp #http://wiki.qhcf.net/index.php?title=WhistlewoodSwamp
+| 40 - 51 | Iukuru            - Pine Forest #http://wiki.qhcf.net/index.php?title=PineForest
+| 30 - 50 | Amlaruil          - Elemental Temple #http://wiki.qhcf.net/index.php?title=ElementalTemple
 | 40 - 51 | Amaranthe         - The Pyramid of Azhan
-|   All   | Shea              - Hillcrest
-| 20 - 35 | Holtzendorff      - Castle of Akan
-|  1 - 20 | Holtzendorff      - Akan
+|   All   | Shea              - Hillcrest #http://wiki.qhcf.net/index.php?title=Hillcrest
+| 20 - 35 | Holtzendorff      - Castle of Akan #http://wiki.qhcf.net/index.php?title=CastleAkan
+|  1 - 20 | Holtzendorff      - Akan #http://wiki.qhcf.net/index.php?title=Akan
 |  1 - 25 | Vilhazarog/Braemir - Silverwood
-|  5 - 45 | Gareth            - The Basilica
-|   All   | Poetry            - Evermoon Hollow
-|   All   | Yanoreth          - Blackclaw Village
-|  1 - 30 | Galadriel         - Copeham Inn
+|  5 - 45 | Gareth            - The Basilica #http://wiki.qhcf.net/index.php?title=Basilica
+|   All   | Poetry            - Evermoon Hollow #http://wiki.qhcf.net/index.php?title=EvermoonHollow
+|   All   | Yanoreth          - Blackclaw Village #http://wiki.qhcf.net/index.php?title=Blackclaw
+|  1 - 30 | Galadriel         - Copeham Inn #http://wiki.qhcf.net/index.php?title=TheCopehamInn
 |  5 - 20 | Galadriel         - The Redhorn Mountains
-| 40 - 51 | Tureanthen        - The Slave Mines of Sitran
-| 20 - 40 | Montolio          - Spiderhaunt Woods
-|  5 - 25 | Montolio          - Lord Tabershaw's Keep
-| 25 - 51 | Nazmorghul        - Mortorn
-| 25 - 50 | Khargqwzxdds      - Mausoleum
-| 25 - 40 | Lloth             - The Frigid Wasteland
+| 40 - 51 | Tureanthen        - The Slave Mines of Sitran #http://wiki.qhcf.net/index.php?title=SlaveMinesOfSitran
+| 20 - 40 | Montolio          - Spiderhaunt Woods #http://wiki.qhcf.net/index.php?title=SpiderHauntwoods
+|  5 - 25 | Montolio          - Lord Tabershaw's Keep #http://wiki.qhcf.net/index.php?title=TabershawsKeep
+| 25 - 51 | Nazmorghul        - Mortorn #http://wiki.qhcf.net/index.php?title=Mortorn
+| 25 - 50 | Khargqwzxdds      - Mausoleum #http://wiki.qhcf.net/index.php?title=Mausoleum
+| 25 - 40 | Lloth             - The Frigid Wasteland #http://wiki.qhcf.net/index.php?title=FrigidWastelands
 |  5 - 25 | Pet/Aeon          - The Pass
-| 10 - 20 | Shokai            - Sands of Sorrow
-|  5 - 25 | Shokai            - Desert of Araile
-| 25 - 50 | Radickon          - Mount Kiadana-Rah
-|  5 - 35 | Cyra              - Aturi
+| 10 - 20 | Shokai            - Sands of Sorrow #http://wiki.qhcf.net/index.php?title=SandsOfSorrow
+|  5 - 25 | Shokai            - Desert of Araile #http://wiki.qhcf.net/index.php?title=DesertOfAraile
+| 25 - 50 | Radickon          - Mount Kiadana-Rah #http://wiki.qhcf.net/index.php?title=MountKiadanaRah
+|  5 - 35 | Cyra              - Aturi #http://wiki.qhcf.net/index.php?title=Aturi
 |  5 - 30 | Amaranthe         - The Galadon Sewers
 | 12 - 18 | Amaranthe/Valg    - Glauruk Spawning Ground #http://wiki.qhcf.net/index.php?title=Glauruk_Spawning_Ground
-| 40 - 50 | Kadizine          - Village of Mal'trakis
-| 45 - 51 | Agathocles        - Island of Corte
-|  5 - 25 | Sattanos          - The Grove
-|  1 - 7  | Cador/Eshval      - The Kobold Warrens
+| 40 - 50 | Kadizine          - Village of Mal'trakis #http://wiki.qhcf.net/index.php?title=Maltrakis
+| 45 - 51 | Agathocles        - Island of Corte #http://wiki.qhcf.net/index.php?title=IslandOfCorte
+|  5 - 25 | Sattanos          - The Grove #http://wiki.qhcf.net/index.php?title=TheGrove
+|  1 - 7  | Cador/Eshval      - The Kobold Warrens #http://wiki.qhcf.net/index.php?title=Kobold
 | 20 - 51 | Mayesha           - Velkyn Oloth
 | 10 - 25 | Zulghinlour       - The Village of Barovia
 | 30 - 50 | Zulghinlour       - The Keep of Barovia
 | 35 - 50 | Savraeth          - Lost in the Mists
-|  5 - 51 | Twist/Tureanthen/Kors - The Ashes of NoWhere
-| 35 - 51 | Scarabaeus        - The Dark Wood
-| 40 - 50 | Scarabaeus        - Ante-Hell
-|  2 - 10 | Jormungandr/Nelt  - The Goblin Village
-|  3 - 10 | ShaidarHaran/Soucivi - Graveyard
-| 25 - 45 | ShaidarHaran      - Abandoned Mines
-| 35 - 51 | ShaidarHaran      - Teth Azeleth
+|  5 - 51 | Twist/Tureanthen/Kors - The Ashes of NoWhere #http://wiki.qhcf.net/index.php?title=The_Ashes_of_NoWhere
+| 35 - 51 | Scarabaeus        - The Dark Wood #http://wiki.qhcf.net/index.php?title=DarkWoods
+| 40 - 50 | Scarabaeus        - Ante-Hell #http://wiki.qhcf.net/index.php?title=Ante-Hell
+|  2 - 10 | Jormungandr/Nelt  - The Goblin Village #http://wiki.qhcf.net/index.php?title=GoblinVillage
+|  3 - 10 | ShaidarHaran/Soucivi - Graveyard #http://wiki.qhcf.net/index.php?title=Graveyard
+| 25 - 45 | ShaidarHaran      - Abandoned Mines #http://wiki.qhcf.net/index.php?title=AbandonedMines
+| 35 - 51 | ShaidarHaran      - Teth Azeleth #http://wiki.qhcf.net/index.php?title=TethAzeleth
 | 35 - 51 | ShaidarHaran      - Underdark   #http://wiki.qhcf.net/index.php?title=Underdark
-| 35 - 51 | ShaidarHaran      - Coral Palace
-|   All   | Vass/Rad          - Seantryn Harbor
-|  1 - 10 | Vassagon          - The Lumberyard
-| 15 - 50 | Vassagon          - Waters of the Deep
-| 40 - 51 | Nepenthe          - Kuo-Toa Lair
-|  5 - 15 | Nepenthe          - Ysigrath
-| 10 - 40 | Nepenthe          - Balator
-|  1 - 20 | Pico              - The Coastal Plains
-| 15 - 35 | Pico              - The Jade Mountains
-| 30 - 50 | Pico              - The Wastes of Nonviel
-| 10 - 25 | Pico              - The Xvart Lair
-| 10 - 35 | Jullias/Nalasul   - The Aryth Ocean
+| 35 - 51 | ShaidarHaran      - Coral Palace #http://wiki.qhcf.net/index.php?title=CoralPalace
+|   All   | Vass/Rad          - Seantryn Harbor #http://wiki.qhcf.net/index.php?title=SeantrynHarbor
+|  1 - 10 | Vassagon          - The Lumberyard #http://wiki.qhcf.net/index.php?title=Lumberyard
+| 15 - 50 | Vassagon          - Waters of the Deep #http://wiki.qhcf.net/index.php?title=Waters_of_the_Deep
+| 40 - 51 | Nepenthe          - Kuo-Toa Lair #http://wiki.qhcf.net/index.php?title=KuoToaLair
+|  5 - 15 | Nepenthe          - Ysigrath #http://wiki.qhcf.net/index.php?title=Ysigrath
+| 10 - 40 | Nepenthe          - Balator #http://wiki.qhcf.net/index.php?title=Balator
+|  1 - 20 | Pico              - The Coastal Plains #http://wiki.qhcf.net/index.php?title=The_Coastal_Plains
+| 15 - 35 | Pico              - The Jade Mountains #http://wiki.qhcf.net/index.php?title=JadeMountains
+| 30 - 50 | Pico              - The Wastes of Nonviel #http://wiki.qhcf.net/index.php?title=WastesOfNonviel
+| 10 - 25 | Pico              - The Xvart Lair #http://wiki.qhcf.net/index.php?title=XvartLair
+| 10 - 35 | Jullias/Nalasul   - The Aryth Ocean #http://wiki.qhcf.net/index.php?title=ArythOcean
 |  1 - 10 | Jullias           - Aldevari
-|  5 - 15 | Jullias           - The Violet Woodland
-| 20 - 50 | Nimbus/Thror      - The Battlefield
-|   All   | Rayihn            - Ayr'Trinil, the Arial City
-|   All   | Zesam             - Arkham.   #http://wiki.qhcf.net/index.php?title=Arkham
-| 10 - 51 | Various           - Voralian City
-|   All   | Amaranthe         - The Outpost of Tir-Talath
-|   All   | Scarabaeus        - Hamsah Mu'tazz
-|   All   | Various           - Galadon
-|   All   | Pet/Aeon          - Udgaard
-|   All   | Vass/Rad          - Seantryn Modan
+|  5 - 15 | Jullias           - The Violet Woodland #http://wiki.qhcf.net/index.php?title=VioletWoodland
+| 20 - 50 | Nimbus/Thror      - The Battlefield #http://wiki.qhcf.net/index.php?title=Battlefield
+|   All   | Rayihn            - Ayr'Trinil, the Arial City #http://wiki.qhcf.net/index.php?title=Ayr%27Trinil
+|   All   | Zesam             - Arkham   #http://wiki.qhcf.net/index.php?title=Arkham
+| 10 - 51 | Various           - Voralian City #http://wiki.qhcf.net/index.php?title=Voralian_City 
+|   All   | Amaranthe         - The Outpost of Tir-Talath #http://wiki.qhcf.net/index.php?title=TirTalath
+|   All   | Scarabaeus        - Hamsah Mu'tazz #http://wiki.qhcf.net/index.php?title=HamsahMutaz
+|   All   | Various           - Galadon #http://wiki.qhcf.net/index.php?title=Galadon
+|   All   | Pet/Aeon          - Udgaard #http://wiki.qhcf.net/index.php?title=Udgaard
+|   All   | Vass/Rad          - Seantryn Modan #http://wiki.qhcf.net/index.php?title=Seantryn_Modan
