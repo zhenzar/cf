@@ -119,13 +119,16 @@ class CharacterController extends Controller
             ->map(function ($area) use ($completed, $level) {
                 $area->completed = $completed->has($area->id);
                 $area->in_range = $level >= $area->min_level && $level <= $area->max_level;
-                $area->level_appropriate = $level >= $area->min_level && $level <= $area->max_level && $area->max_level <= $level;
+                $area->level_appropriate = $area->in_range && $area->max_level <= $level;
                 return $area;
             })
-            // Show areas whose max_level is at or below the character's level (level-appropriate),
-            // plus any already-completed ones (so they remain visible).
-            ->filter(fn ($a) => ($a->min_level <= $level && $a->max_level <= $level) || $a->completed)
-            ->sortBy(fn ($a) => $a->completed ? 1 : 0)
+            // Hide areas the character is out of range for (unless already completed).
+            ->filter(fn ($a) => $a->in_range || $a->completed)
+            // Sort: level-appropriate first (max<=level), then wider in-range (max>level), then completed.
+            ->sortBy(function ($a) {
+                if ($a->completed) return 2;
+                return $a->level_appropriate ? 0 : 1;
+            })
             ->values();
 
         return view('characters.areas', [
