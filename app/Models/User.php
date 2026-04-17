@@ -17,6 +17,11 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    public function characters()
+    {
+        return $this->hasMany(Character::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
