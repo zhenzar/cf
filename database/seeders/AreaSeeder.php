@@ -16,6 +16,7 @@ class AreaSeeder extends Seeder
         }
 
         $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $seen = [];
 
         foreach ($lines as $line) {
             $parts = array_map('trim', explode('|', $line));
@@ -50,10 +51,24 @@ class AreaSeeder extends Seeder
             }
             $name = rtrim($nameAndUrl, ". \t");
 
-            Area::updateOrCreate(
+            $area = Area::updateOrCreate(
                 ['realm' => $realm, 'name' => $name],
                 ['min_level' => $min, 'max_level' => $max, 'url' => $url],
             );
+            $seen[] = $area->id;
+        }
+
+        // Remove areas no longer present in the file. Also detach any
+        // character completions for those areas.
+        $stale = Area::whereNotIn('id', $seen)
+            // Only prune areas originally sourced from areas.md (not boats etc.).
+            ->whereNotIn('realm', ['Merchants Dock', 'Hidden Dock', 'South Dock', 'North Dock'])
+            ->pluck('id');
+
+        if ($stale->isNotEmpty()) {
+            \DB::table('area_character')->whereIn('area_id', $stale)->delete();
+            Area::whereIn('id', $stale)->delete();
+            $this->command?->info("Removed {$stale->count()} stale areas.");
         }
     }
 }
