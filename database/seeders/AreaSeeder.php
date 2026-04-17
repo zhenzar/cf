@@ -40,11 +40,19 @@ class AreaSeeder extends Seeder
             if (! str_contains($rest, ' - ')) {
                 continue;
             }
-            [$realm, $name] = array_map('trim', explode(' - ', $rest, 2));
+            [$realm, $nameAndUrl] = array_map('trim', explode(' - ', $rest, 2));
+
+            // Extract optional trailing URL marker: "Name   #https://..."
+            $url = null;
+            if (preg_match('/^(.*?)\s*#\s*(https?:\/\/\S+)\s*$/', $nameAndUrl, $m)) {
+                $nameAndUrl = trim($m[1]);
+                $url = $m[2];
+            }
+            $name = rtrim($nameAndUrl, ". \t");
 
             Area::updateOrCreate(
                 ['realm' => $realm, 'name' => $name],
-                ['min_level' => $min, 'max_level' => $max],
+                ['min_level' => $min, 'max_level' => $max, 'url' => $url],
             );
         }
     }

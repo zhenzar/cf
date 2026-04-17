@@ -1,5 +1,5 @@
 | 40 - 51 | Dhuuston          - Subterranean Spire
-| 40 - 51 | Neajess           - Temple of Qhabiszan
+| 40 - 51 | Neajess           - Temple of Qhabiszan             
 |   All   | Rahsael/Ishuli    - The Shadow Peak Pass
 | 25 - 45 | Rarywey           - Aubade
 |   All   | Ishuli            - Saurian Village
@@ -120,7 +120,7 @@
 | 25 - 50 | Radickon          - Mount Kiadana-Rah
 |  5 - 35 | Cyra              - Aturi
 |  5 - 30 | Amaranthe         - The Galadon Sewers
-| 12 - 18 | Amaranthe/Valg    - Glauruk Spawning Ground
+| 12 - 18 | Amaranthe/Valg    - Glauruk Spawning Ground #http://wiki.qhcf.net/index.php?title=Glauruk_Spawning_Ground
 | 40 - 50 | Kadizine          - Village of Mal'trakis
 | 45 - 51 | Agathocles        - Island of Corte
 |  5 - 25 | Sattanos          - The Grove
@@ -136,7 +136,7 @@
 |  3 - 10 | ShaidarHaran/Soucivi - Graveyard
 | 25 - 45 | ShaidarHaran      - Abandoned Mines
 | 35 - 51 | ShaidarHaran      - Teth Azeleth
-| 35 - 51 | ShaidarHaran      - Underdark
+| 35 - 51 | ShaidarHaran      - Underdark   #http://wiki.qhcf.net/index.php?title=Underdark
 | 35 - 51 | ShaidarHaran      - Coral Palace
 |   All   | Vass/Rad          - Seantryn Harbor
 |  1 - 10 | Vassagon          - The Lumberyard
@@ -152,3 +152,11 @@
 |  1 - 10 | Jullias           - Aldevari
 |  5 - 15 | Jullias           - The Violet Woodland
 | 20 - 50 | Nimbus/Thror      - The Battlefield
+|   All   | Rayihn            - Ayr'Trinil, the Arial City
+|   All   | Zesam             - Arkham.   #http://wiki.qhcf.net/index.php?title=Arkham
+| 10 - 51 | Various           - Voralian City
+|   All   | Amaranthe         - The Outpost of Tir-Talath
+|   All   | Scarabaeus        - Hamsah Mu'tazz
+|   All   | Various           - Galadon
+|   All   | Pet/Aeon          - Udgaard
+|   All   | Vass/Rad          - Seantryn Modan

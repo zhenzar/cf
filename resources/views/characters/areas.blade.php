@@ -85,7 +85,14 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-2 font-medium">
-                                    {{ $area->name }}
+                                    @if ($area->url)
+                                        <a href="{{ $area->url }}" target="_blank" rel="noopener"
+                                           class="text-indigo-600 hover:text-indigo-900 hover:underline">
+                                            {{ $area->name }}
+                                        </a>
+                                    @else
+                                        {{ $area->name }}
+                                    @endif
                                     @if ($area->completed)
                                         <span class="ml-2 text-xs text-green-600">✓ completed</span>
                                     @elseif ($area->is_all)

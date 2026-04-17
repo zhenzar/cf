@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Area extends Model
 {
-    protected $fillable = ['name', 'realm', 'min_level', 'max_level'];
+    protected $fillable = ['name', 'realm', 'min_level', 'max_level', 'url'];
 
     protected $casts = [
         'min_level' => 'integer',
