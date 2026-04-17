@@ -2,12 +2,11 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $character->name }} <span class="text-gray-400 font-normal">(Level {{ $character->level }})</span>
+                {{ $character->name }}
             </h2>
             <div class="flex items-center gap-3 text-sm">
                 <a href="{{ route('characters.areas', $character) }}" class="text-indigo-600 hover:text-indigo-900">Areas</a>
-                <a href="{{ route('characters.edit', $character) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                <a href="{{ route('characters.index') }}" class="text-gray-600 hover:text-gray-900">&larr; Back</a>
+                <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900">&larr; Back</a>
             </div>
         </div>
     </x-slot>
@@ -20,6 +19,24 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 space-y-4">
+                    <div class="pb-4 border-b">
+                        <form method="POST" action="{{ route('characters.update', $character) }}"
+                              class="flex items-end gap-3">
+                            @csrf
+                            @method('PATCH')
+                            <div>
+                                <label for="level" class="block text-xs font-semibold text-gray-500 uppercase">Level</label>
+                                <input id="level" name="level" type="number" min="1" max="51" step="1"
+                                       value="{{ old('level', $character->level) }}"
+                                       class="mt-1 w-24 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            </div>
+                            <x-primary-button>Save</x-primary-button>
+                            @error('level')
+                                <span class="text-sm text-red-600 ml-2">{{ $message }}</span>
+                            @enderror
+                        </form>
+                    </div>
+
                     <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <dt class="text-xs font-semibold text-gray-500 uppercase">Race</dt>

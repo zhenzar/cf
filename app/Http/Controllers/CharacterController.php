@@ -18,10 +18,13 @@ class CharacterController extends Controller
     {
         $characters = Auth::user()->characters()
             ->with(['race', 'characterClass', 'sphere'])
+            ->withCount(['areas as areas_completed_count'])
             ->latest()
             ->get();
 
-        return view('characters.index', compact('characters'));
+        $totalAreas = \App\Models\Area::count();
+
+        return view('dashboard', compact('characters', 'totalAreas'));
     }
 
     public function create()
@@ -110,22 +113,22 @@ class CharacterController extends Controller
         abort_unless($character->user_id === Auth::id(), 403);
 
         $completed = $character->areas()->pluck('areas.id', 'areas.id');
+        $level = $character->level;
 
-        $areas = Area::orderBy('realm')->orderBy('name')->get()->map(function ($area) use ($character, $completed) {
-            $area->completed = $completed->has($area->id);
-            $area->in_range = $character->level >= $area->min_level && $character->level <= $area->max_level;
-            return $area;
-        });
-
-        // Sort: unexplored in-range first, then unexplored out-of-range, then completed
-        $sorted = $areas->sortBy(function ($a) {
-            if ($a->completed) return 2;
-            return $a->in_range ? 0 : 1;
-        })->values();
+        $areas = Area::orderBy('realm')->orderBy('name')->get()
+            ->map(function ($area) use ($completed, $level) {
+                $area->completed = $completed->has($area->id);
+                $area->in_range = $level >= $area->min_level && $level <= $area->max_level;
+                return $area;
+            })
+            // Only show areas that fit current level, plus any already-completed (may now be out of range)
+            ->filter(fn ($a) => $a->in_range || $a->completed)
+            ->sortBy(fn ($a) => $a->completed ? 1 : 0)
+            ->values();
 
         return view('characters.areas', [
             'character' => $character,
-            'areas' => $sorted,
+            'areas' => $areas,
         ]);
     }
 
