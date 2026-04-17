@@ -117,16 +117,17 @@ class CharacterController extends Controller
             $filter = 'in-range';
         }
         $q = trim((string) $request->query('q', ''));
+        // When searching, always search across all areas regardless of filter.
+        if ($q !== '') {
+            $filter = 'all';
+        }
 
         $completed = $character->areas()->pluck('areas.id', 'areas.id');
         $level = $character->level;
 
         $query = Area::orderBy('realm')->orderBy('name');
         if ($q !== '') {
-            $query->where(function ($w) use ($q) {
-                $w->where('name', 'like', "%{$q}%")
-                  ->orWhere('realm', 'like', "%{$q}%");
-            });
+            $query->where('name', 'like', "%{$q}%");
         }
 
         $all = $query->get()
