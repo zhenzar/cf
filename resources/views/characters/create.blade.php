@@ -19,6 +19,7 @@
             'name' => $c->name,
             'alignments' => $c->allowed_alignments,
             'description' => $c->description,
+            'exclusive_race_name' => $c->exclusive_race_name,
         ])->values();
     @endphp
 
@@ -34,13 +35,21 @@
                         alignment: '{{ old('alignment') }}',
                         get race() { return this.races.find(r => r.id == this.raceId) },
                         get klass() { return this.classes.find(c => c.id == this.classId) },
+                        get forcedClass() {
+                            if (!this.race) return null;
+                            return this.classes.find(c => c.exclusive_race_name === this.race.name) || null;
+                        },
                         get availableClasses() {
-                            if (!this.race) return this.classes;
-                            return this.classes.filter(c => c.alignments.some(a => this.race.alignments.includes(a)));
+                            if (!this.race) return this.classes.filter(c => !c.exclusive_race_name);
+                            if (this.forcedClass) return [this.forcedClass];
+                            return this.classes.filter(c =>
+                                !c.exclusive_race_name &&
+                                c.alignments.some(a => this.race.alignments.includes(a))
+                            );
                         },
                         isClassAvailable(c) {
-                            if (!this.race) return true;
-                            return c.alignments.some(a => this.race.alignments.includes(a));
+                            if (!c) return false;
+                            return this.availableClasses.some(x => x.id === c.id);
                         },
                         get allowedAlignments() {
                             if (!this.race || !this.klass) return [];
@@ -49,6 +58,7 @@
                     }"
                      x-init="
                         $watch('raceId', () => {
+                            if (forcedClass) { classId = forcedClass.id; return; }
                             if (classId && !isClassAvailable(klass)) classId = '';
                         });
                         $watch('allowedAlignments', val => {
@@ -91,7 +101,10 @@
                                     <option :value="c.id" x-text="c.name"></option>
                                 </template>
                             </select>
-                            <p class="mt-1 text-xs text-gray-500" x-show="race && availableClasses.length < classes.length">
+                            <p class="mt-1 text-xs text-indigo-600" x-show="forcedClass">
+                                <span class="font-semibold" x-text="race?.name"></span>s are always <span class="font-semibold" x-text="forcedClass?.name"></span>s.
+                            </p>
+                            <p class="mt-1 text-xs text-gray-500" x-show="race && !forcedClass && availableClasses.length < classes.filter(c => !c.exclusive_race_name).length">
                                 Some classes are hidden because they don't match <span class="font-semibold" x-text="race?.name"></span>'s alignment.
                             </p>
                             <p class="mt-1 text-xs text-gray-500" x-show="klass" x-text="klass?.description"></p>

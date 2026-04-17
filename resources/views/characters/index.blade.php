@@ -26,6 +26,7 @@
                             <thead>
                                 <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                     <th class="px-4 py-2">Name</th>
+                                    <th class="px-4 py-2">Lvl</th>
                                     <th class="px-4 py-2">Race</th>
                                     <th class="px-4 py-2">Class</th>
                                     <th class="px-4 py-2">Sphere</th>
@@ -37,11 +38,14 @@
                                 @foreach ($characters as $character)
                                     <tr>
                                         <td class="px-4 py-3 font-medium">{{ $character->name }}</td>
+                                        <td class="px-4 py-3">{{ $character->level }}</td>
                                         <td class="px-4 py-3">{{ $character->race->name }}</td>
                                         <td class="px-4 py-3">{{ $character->characterClass->name }}</td>
                                         <td class="px-4 py-3">{{ $character->sphere?->name ?? '—' }}</td>
                                         <td class="px-4 py-3 capitalize">{{ $character->alignment }}</td>
-                                        <td class="px-4 py-3 text-right">
+                                        <td class="px-4 py-3 text-right space-x-3">
+                                            <a href="{{ route('characters.areas', $character) }}"
+                                               class="text-indigo-600 hover:text-indigo-900">Areas</a>
                                             <a href="{{ route('characters.show', $character) }}"
                                                class="text-indigo-600 hover:text-indigo-900">View</a>
                                         </td>

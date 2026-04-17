@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             RaceSeeder::class,
             CharacterClassSeeder::class,
             SphereSeeder::class,
+            AreaSeeder::class,
             UserSeeder::class,
         ]);
     }

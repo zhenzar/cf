@@ -2,11 +2,13 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $character->name }}
+                {{ $character->name }} <span class="text-gray-400 font-normal">(Level {{ $character->level }})</span>
             </h2>
-            <a href="{{ route('characters.index') }}" class="text-sm text-gray-600 hover:text-gray-900">
-                &larr; Back to list
-            </a>
+            <div class="flex items-center gap-3 text-sm">
+                <a href="{{ route('characters.areas', $character) }}" class="text-indigo-600 hover:text-indigo-900">Areas</a>
+                <a href="{{ route('characters.edit', $character) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                <a href="{{ route('characters.index') }}" class="text-gray-600 hover:text-gray-900">&larr; Back</a>
+            </div>
         </div>
     </x-slot>
 

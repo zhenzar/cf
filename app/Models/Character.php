@@ -6,7 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Character extends Model
 {
-    protected $fillable = ['user_id', 'name', 'race_id', 'character_class_id', 'sphere_id', 'alignment'];
+    protected $fillable = ['user_id', 'name', 'race_id', 'character_class_id', 'sphere_id', 'alignment', 'level'];
+
+    protected $casts = [
+        'level' => 'integer',
+    ];
+
+    public function areas()
+    {
+        return $this->belongsToMany(Area::class)
+            ->withPivot('completed_at')
+            ->withTimestamps();
+    }
 
     public function user()
     {

@@ -17,8 +17,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('characters/{character}/areas', [CharacterController::class, 'areas'])->name('characters.areas');
+    Route::post('characters/{character}/areas/toggle', [CharacterController::class, 'toggleArea'])->name('characters.areas.toggle');
+
     Route::resource('characters', CharacterController::class)
-        ->only(['index', 'create', 'store', 'show', 'destroy']);
+        ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
 });
 
 require __DIR__.'/auth.php';
