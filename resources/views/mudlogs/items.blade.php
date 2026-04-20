@@ -74,7 +74,7 @@
                                     <th class="px-3 py-2 cursor-help" title="Piercing, Bashing, Slashing, Magic, Element">Armor</th>
                                     <th class="px-3 py-2">Affects</th>
                                     <th class="px-3 py-2">Flags</th>
-                                    <th class="px-3 py-2">Source</th>
+                                    <th class="px-3 py-2 cursor-help" title="Average damage (dice)">Av Dmg</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
@@ -148,10 +148,13 @@
                                                 @endforeach
                                             </div>
                                         </td>
-                                        <td class="px-3 py-2 text-xs">
-                                            <a href="{{ route('mudlogs.show', $item->log_file_id) }}" class="text-indigo-600 hover:text-indigo-900">
-                                                {{ $item->logFile->filename }}
-                                            </a>
+                                        <td class="px-3 py-2 text-xs font-mono whitespace-nowrap" title="{{ $item->attack_type ? 'Attack: '.$item->attack_type : '' }}{{ $item->damage_type ? ' · '.$item->damage_type : '' }}">
+                                            @if ($item->av_damage || $item->damage_dice)
+                                                <span class="text-gray-800">{{ $item->av_damage ?? '—' }}</span>
+                                                @if ($item->damage_dice)
+                                                    <span class="text-gray-400">({{ $item->damage_dice }})</span>
+                                                @endif
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
