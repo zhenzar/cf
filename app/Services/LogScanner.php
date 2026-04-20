@@ -59,12 +59,23 @@ class LogScanner
             throw new \RuntimeException("Cannot read {$path}");
         }
         $size = $size ?? strlen($content);
+        $contentHash = hash('sha256', $content);
+
+        // Skip if we've already ingested a file with identical content.
+        $existingByHash = LogFile::where('content_hash', $contentHash)
+            ->where('path', '!=', $path)
+            ->first();
+        if ($existingByHash) {
+            return ['log_file' => $existingByHash, 'items_new' => 0, 'new_file' => false];
+        }
 
         $logFile = LogFile::firstOrNew(['path' => $path]);
         $newFile = ! $logFile->exists;
         $logFile->filename = $filename;
         $logFile->source = $source;
         $logFile->size = $size;
+        $logFile->content_hash = $contentHash;
+        $logFile->content = $content;
         $logFile->scanned_at = now();
         $logFile->save();
 

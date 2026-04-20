@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class LogFile extends Model
 {
     protected $fillable = [
-        'path', 'filename', 'source', 'size', 'reviewed', 'items_count', 'scanned_at',
+        'path', 'filename', 'source', 'size', 'content_hash', 'content',
+        'reviewed', 'items_count', 'scanned_at',
     ];
 
     protected $casts = [
