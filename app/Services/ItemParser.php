@@ -121,7 +121,7 @@ class ItemParser
                 if (preg_match('/worn (?:about|on|around) the (.+?)\./i', $rest, $sm)) {
                     $data['slot'] = ucfirst(strtolower(trim($sm[1])));
                 } elseif (stripos($rest, 'wielded') !== false || $data['item_type'] === 'Weapon') {
-                    $data['slot'] = 'Wield';
+                    $data['slot'] = 'Weapon';
                 } elseif (stripos($rest, 'held') !== false) {
                     $data['slot'] = 'Hold';
                 }
@@ -227,6 +227,11 @@ class ItemParser
                 if ($flag !== '') $data['flags'][] = $flag;
                 continue;
             }
+        }
+
+        // Promote weapon qualifier (two-handed/one-handed/dual-wielded) into a flag.
+        if (!empty($data['weapon_qualifier'])) {
+            $data['flags'][] = $data['weapon_qualifier'];
         }
 
         // Dedup flags.

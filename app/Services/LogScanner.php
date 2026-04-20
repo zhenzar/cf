@@ -67,15 +67,16 @@ class LogScanner
         DB::transaction(function () use ($parsed, $logFile, &$itemsNew) {
             foreach ($parsed as $data) {
                 $hash = hash('sha256', $data['raw_text']);
-                $exists = Item::where('log_file_id', $logFile->id)
-                    ->where('hash', $hash)->exists();
-                if ($exists) continue;
+                $statsHash = $this->computeStatsHashFromData($data);
 
-                // If an item with the same name already exists anywhere in the
-                // database, mark the new one as pending for review.
+                // Exact duplicate anywhere in the database → skip silently.
+                if (Item::where('stats_hash', $statsHash)->exists()) {
+                    continue;
+                }
+
+                // Name already exists but stats differ → queue for review.
                 $nameExists = Item::where('name', $data['name'])
-                    ->where('status', 'confirmed')
-                    ->exists();
+                    ->where('status', 'confirmed')->exists();
                 $status = $nameExists ? 'pending' : 'confirmed';
 
                 $item = Item::create([
@@ -98,6 +99,7 @@ class LogScanner
                     'av_damage' => $data['av_damage'],
                     'raw_text' => $data['raw_text'],
                     'hash' => $hash,
+                    'stats_hash' => $statsHash,
                 ]);
 
                 foreach ($data['protections'] as $p) {
@@ -117,5 +119,47 @@ class LogScanner
         });
 
         return ['log_file' => $logFile, 'items_new' => $itemsNew, 'new_file' => $newFile];
+    }
+
+    /**
+     * Canonical stats hash computed from parsed data (used before an Item exists).
+     * Must match Item::computeStatsHash() output on the persisted model.
+     */
+    public function computeStatsHashFromData(array $d): string
+    {
+        $norm = fn ($v) => is_string($v) ? trim(strtolower($v)) : $v;
+
+        $protections = collect($d['protections'] ?? [])
+            ->map(fn ($p) => strtolower($p['type']) . ':' . $p['value'])
+            ->sort()->values()->all();
+        $affects = collect($d['affects'] ?? [])
+            ->map(fn ($a) => strtolower($a['stat']) . ':' . $a['modifier'])
+            ->sort()->values()->all();
+        $flags = collect($d['flags'] ?? [])
+            ->map(fn ($f) => strtolower($f))
+            ->sort()->values()->all();
+
+        $payload = [
+            'name'             => $norm($d['name'] ?? null),
+            'keyword'          => $norm($d['keyword'] ?? null),
+            'worth_copper'     => $d['worth_copper'] ?? null,
+            'level'            => $d['level'] ?? null,
+            'item_type'        => $norm($d['item_type'] ?? null),
+            'slot'             => $norm($d['slot'] ?? null),
+            'material'         => $norm($d['material'] ?? null),
+            'weight_pounds'    => $d['weight_pounds'] ?? null,
+            'weight_ounces'    => $d['weight_ounces'] ?? null,
+            'weapon_class'     => $norm($d['weapon_class'] ?? null),
+            'weapon_qualifier' => $norm($d['weapon_qualifier'] ?? null),
+            'damage_type'      => $norm($d['damage_type'] ?? null),
+            'attack_type'      => $norm($d['attack_type'] ?? null),
+            'damage_dice'      => $norm($d['damage_dice'] ?? null),
+            'av_damage'        => $d['av_damage'] ?? null,
+            'protections'      => $protections,
+            'affects'          => $affects,
+            'flags'            => $flags,
+        ];
+
+        return hash('sha256', json_encode($payload));
     }
 }
