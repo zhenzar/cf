@@ -9,7 +9,14 @@
         @if ($i->keyword)<span class="text-gray-400">'{{ $i->keyword }}'</span>@endif
     </div>
     @if ($i->weapon_class)
-        <div class="text-xs text-gray-600">Weapon: {{ $i->weapon_class }} ({{ $i->damage_type }})@if($i->av_damage) · av {{ $i->av_damage }}@endif</div>
+        <div class="text-xs text-gray-600">
+            Weapon:
+            @if($i->weapon_qualifier){{ $i->weapon_qualifier }} @endif{{ $i->weapon_class }}
+            @if($i->damage_type) ({{ $i->damage_type }}) @endif
+            @if($i->attack_type) · attack: {{ $i->attack_type }}@endif
+            @if($i->damage_dice) · {{ $i->damage_dice }}@endif
+            @if($i->av_damage) · av {{ $i->av_damage }}@endif
+        </div>
     @endif
     @if ($i->protections->isNotEmpty())
         <div class="flex flex-wrap gap-1">

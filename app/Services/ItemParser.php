@@ -83,7 +83,10 @@ class ItemParser
             'weight_pounds' => null,
             'weight_ounces' => null,
             'weapon_class' => null,
+            'weapon_qualifier' => null,
             'damage_type' => null,
+            'attack_type' => null,
+            'damage_dice' => null,
             'av_damage' => null,
             'protections' => [],
             'affects' => [],
@@ -137,11 +140,31 @@ class ItemParser
             if (preg_match('/it is an?\s+(\w+)\s+that inflicts\s+(\w+)\s+damage/i', $line, $m)) {
                 $data['weapon_class'] = ucfirst(strtolower($m[1]));
                 $data['damage_type'] = ucfirst(strtolower($m[2]));
+                $data['item_type'] = $data['item_type'] ?? 'Weapon';
+                $data['slot'] = $data['slot'] ?? 'Wield';
                 continue;
             }
 
-            // Average damage: "The damage is averaging X." or "Average damage is N"
-            if (preg_match('/average\s+damage\s+(?:is|of)?\s*([\d.]+)/i', $line, $m)) {
+            // Weapon line w/ attack type: "It is a two-handed axe with an attack type of crush."
+            // Qualifier is optional.
+            if (preg_match('/^it is an?\s+(?:(two-handed|one-handed|dual-wielded)\s+)?([a-z]+)\s+with an attack type of\s+(\w+)/i', $line, $m)) {
+                if (!empty($m[1])) $data['weapon_qualifier'] = strtolower($m[1]);
+                $data['weapon_class'] = ucfirst(strtolower($m[2]));
+                $data['attack_type'] = strtolower($m[3]);
+                $data['item_type'] = $data['item_type'] ?? 'Weapon';
+                $data['slot'] = $data['slot'] ?? 'Wield';
+                continue;
+            }
+
+            // Damage dice + average: "It can cause 3d19 points of damage, at average 30."
+            if (preg_match('/(?:can cause|does|inflicts)\s+(\d+d\d+)\s+points? of damage(?:,?\s+at average\s+(\d+(?:\.\d+)?))?/i', $line, $m)) {
+                $data['damage_dice'] = strtolower($m[1]);
+                if (!empty($m[2])) $data['av_damage'] = $m[2];
+                continue;
+            }
+
+            // Fallback average damage: "average damage is N"
+            if (preg_match('/average\s+damage\s+(?:is|of)?\s*(\d+(?:\.\d+)?)/i', $line, $m)) {
                 $data['av_damage'] = $m[1];
                 continue;
             }
@@ -187,7 +210,27 @@ class ItemParser
                 }
                 continue;
             }
+
+            // Well-known descriptive flag lines.
+            if (stripos($line, 'imbued with a blessing') !== false) {
+                $data['flags'][] = 'blessed';
+                continue;
+            }
+            if (preg_match('/magical aura surrounds it/i', $line)) {
+                $data['flags'][] = 'magical';
+                continue;
+            }
+            if (preg_match('/^it (?:glows|emanates|radiates|hums|emits|is humming|is glowing)\b/i', $line, $m)) {
+                // Normalize glow/hum-style lines into simple flags (e.g. "glows", "hums", "emanates sound").
+                $flag = strtolower(preg_replace('/[.\s]+$/', '', trim(substr($line, 3))));
+                $flag = preg_replace('/^is\s+/', '', $flag);
+                if ($flag !== '') $data['flags'][] = $flag;
+                continue;
+            }
         }
+
+        // Dedup flags.
+        $data['flags'] = array_values(array_unique($data['flags']));
 
         // Require at least a name to be considered valid.
         if (! $data['name']) {
