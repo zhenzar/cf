@@ -176,16 +176,18 @@ class MudLogController extends Controller
      */
     public function rescanAll()
     {
-        $files = LogFile::all();
         $queued = 0;
 
-        foreach ($files as $mudlog) {
-            if (! is_file($mudlog->path)) {
-                continue;
-            }
-            RescanLogFile::dispatch($mudlog->id);
-            $queued++;
-        }
+        LogFile::select('id', 'path', 'filename', 'source')
+            ->chunkById(100, function ($files) use (&$queued) {
+                foreach ($files as $mudlog) {
+                    if (! is_file($mudlog->path)) {
+                        continue;
+                    }
+                    RescanLogFile::dispatch($mudlog->id);
+                    $queued++;
+                }
+            });
 
         return back()->with('status', "Queued rescan for {$queued} file(s).");
     }
@@ -231,13 +233,19 @@ class MudLogController extends Controller
     {
         $all = Item::query()
             ->where('status', 'confirmed')
-            ->with(['logFile', 'protections', 'affects', 'flags', 'spells'])
+            ->select('id', 'log_file_id', 'name', 'keyword', 'level', 'item_type', 'slot', 'material',
+                     'weapon_class', 'weapon_qualifier', 'damage_type', 'attack_type', 'damage_dice',
+                     'av_damage', 'worth_copper', 'weight_pounds', 'weight_ounces', 'alignment', 'status')
+            ->with(['logFile:id,filename', 'protections', 'affects', 'flags', 'spells'])
             ->orderBy('level')->orderBy('name')
             ->get();
 
         // Preferred slot order (non-weapons). Slot 'Finger' is shown as 'Rings'.
         $slotOrder = ['Finger', 'Neck', 'Body', 'Head', 'Face', 'Legs', 'Feet', 'Hands', 'Arms', 'Waist', 'Wrist'];
         $slotLabels = ['Finger' => 'Rings'];
+
+        // Exotic form slots (shapeshifter equipment) get their own groups.
+        $exoticSlots = ['Hooves', 'Wings', 'Tail', 'Claws', 'Forepaws', 'Hindpaws', 'Horns'];
 
         // Preferred weapon-class order.
         $weaponOrder = ['Axe', 'Sword', 'Mace', 'Whip', 'Flail', 'Dagger', 'Spear', 'Polearm', 'Staff', 'Club', 'Hammer', 'Bow', 'Crossbow'];
@@ -248,6 +256,9 @@ class MudLogController extends Controller
         $groups = [];
         foreach ($slotOrder as $s) {
             $groups[$slotLabels[$s] ?? $s] = collect();
+        }
+        foreach ($exoticSlots as $s) {
+            $groups[$s] = collect();
         }
         foreach ($weaponOrder as $wc) {
             $groups[$wc] = collect();
@@ -279,6 +290,8 @@ class MudLogController extends Controller
             if ($slot && in_array($slot, $slotOrder, true)) {
                 $label = $slotLabels[$slot] ?? $slot;
                 $groups[$label]->push($item);
+            } elseif ($slot && in_array($slot, $exoticSlots, true)) {
+                $groups[$slot]->push($item);
             } else {
                 $otherNonWeapon->push($item);
             }
