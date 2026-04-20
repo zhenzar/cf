@@ -127,7 +127,7 @@ class ItemParser
             }
 
             // Simple type-only lines: "It is a wand." / "It is a scroll." / "It is a staff." / "It is a potion." / "It is a container." / "It is food." / "It is a drink container."
-            if (preg_match('/^it is an?\s+(wand|scroll|staff|potion|talisman|container|drink container|key|light|food|trash|pill|money|fountain|armor|clothing|shield|weapon|treasure|instrument)\s*\.?\s*$/i', $line, $m)) {
+            if (preg_match('/^it is an?\s+(wand|scroll|staff|potion|talisman|container|drink container|key|light|food|trash|pill|money|fountain|armor|clothing|shield|weapon|treasure|instrument|artifact)\s*\.?\s*$/i', $line, $m)) {
                 $data['item_type'] = ucwords(strtolower($m[1]));
                 continue;
             }
@@ -135,6 +135,22 @@ class ItemParser
             // "It is a thief tool." → Lockpicks
             if (preg_match('/^it is an?\s+thief\s+tool\s*\.?\s*$/i', $line)) {
                 $data['item_type'] = 'Lockpicks';
+                continue;
+            }
+
+            // "It is a poison ingredient." / "It is a trap ingredient." / "It is a component."
+            if (preg_match('/^it is an?\s+(poison ingredient|trap ingredient|component)\s*\.?\s*$/i', $line, $m)) {
+                $data['item_type'] = 'Ingredient';
+                continue;
+            }
+
+            // "It is an exotic weapon..." - capture weapon type
+            if (preg_match('/^it is an?\s+exotic\s+weapon/i', $line)) {
+                $data['item_type'] = 'Weapon';
+                // Try to extract weapon class from the rest of the line
+                if (preg_match('/with an attack type of\s+(\w+)/i', $line, $wm)) {
+                    $data['attack_type'] = strtolower($wm[1]);
+                }
                 continue;
             }
 
