@@ -11,7 +11,7 @@ class Item extends Model
     protected $fillable = [
         'log_file_id', 'name', 'keyword', 'worth_copper', 'level',
         'item_type', 'slot', 'material', 'weight_pounds', 'weight_ounces',
-        'weapon_class', 'damage_type', 'av_damage', 'raw_text', 'hash',
+        'weapon_class', 'damage_type', 'av_damage', 'raw_text', 'hash', 'status',
     ];
 
     public function logFile(): BelongsTo

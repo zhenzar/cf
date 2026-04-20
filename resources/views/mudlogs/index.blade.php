@@ -2,9 +2,17 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Mud Logs</h2>
-            <a href="{{ route('mudlogs.items') }}" class="text-sm text-indigo-600 hover:text-indigo-900">
-                Browse parsed items &rarr;
-            </a>
+            <div class="flex gap-4 text-sm">
+                @php($pc = \App\Models\Item::where('status','pending')->count())
+                @if ($pc > 0)
+                    <a href="{{ route('mudlogs.pending') }}" class="text-amber-700 hover:text-amber-900 font-medium">
+                        Pending ({{ $pc }})
+                    </a>
+                @endif
+                <a href="{{ route('mudlogs.items') }}" class="text-indigo-600 hover:text-indigo-900">
+                    Item database &rarr;
+                </a>
+            </div>
         </div>
     </x-slot>
 

@@ -1,8 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Parsed Items</h2>
-            <a href="{{ route('mudlogs.index') }}" class="text-sm text-gray-600 hover:text-gray-900">&larr; Log files</a>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Item Database</h2>
+            <div class="flex gap-4 text-sm">
+                @if (($pendingCount ?? 0) > 0)
+                    <a href="{{ route('mudlogs.pending') }}" class="text-amber-700 hover:text-amber-900 font-medium">
+                        Pending ({{ $pendingCount }}) &rarr;
+                    </a>
+                @endif
+                <a href="{{ route('mudlogs.index') }}" class="text-gray-600 hover:text-gray-900">Log files</a>
+            </div>
         </div>
     </x-slot>
 

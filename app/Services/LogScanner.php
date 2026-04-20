@@ -71,8 +71,16 @@ class LogScanner
                     ->where('hash', $hash)->exists();
                 if ($exists) continue;
 
+                // If an item with the same name already exists anywhere in the
+                // database, mark the new one as pending for review.
+                $nameExists = Item::where('name', $data['name'])
+                    ->where('status', 'confirmed')
+                    ->exists();
+                $status = $nameExists ? 'pending' : 'confirmed';
+
                 $item = Item::create([
                     'log_file_id' => $logFile->id,
+                    'status' => $status,
                     'name' => $data['name'],
                     'keyword' => $data['keyword'],
                     'worth_copper' => $data['worth_copper'],

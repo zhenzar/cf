@@ -101,8 +101,10 @@ class MudLogController extends Controller
         $type = $request->query('type');
         $slot = $request->query('slot');
 
-        $query = Item::query()->with(['logFile', 'protections', 'affects', 'flags'])
-            ->orderByDesc('created_at');
+        $query = Item::query()
+            ->where('status', 'confirmed')
+            ->with(['logFile', 'protections', 'affects', 'flags'])
+            ->orderBy('name');
 
         if ($q !== '') {
             $query->where(function ($w) use ($q) {
@@ -116,9 +118,42 @@ class MudLogController extends Controller
 
         $items = $query->paginate(50)->withQueryString();
 
-        $types = Item::whereNotNull('item_type')->distinct()->orderBy('item_type')->pluck('item_type');
-        $slots = Item::whereNotNull('slot')->distinct()->orderBy('slot')->pluck('slot');
+        $types = Item::whereNotNull('item_type')->where('status', 'confirmed')->distinct()->orderBy('item_type')->pluck('item_type');
+        $slots = Item::whereNotNull('slot')->where('status', 'confirmed')->distinct()->orderBy('slot')->pluck('slot');
+        $pendingCount = Item::where('status', 'pending')->count();
 
-        return view('mudlogs.items', compact('items', 'q', 'type', 'slot', 'types', 'slots'));
+        return view('mudlogs.items', compact('items', 'q', 'type', 'slot', 'types', 'slots', 'pendingCount'));
+    }
+
+    public function pending()
+    {
+        $pending = Item::where('status', 'pending')
+            ->with(['logFile', 'protections', 'affects', 'flags'])
+            ->orderBy('name')->orderBy('created_at')
+            ->get();
+
+        // Preload existing confirmed items per name to show side-by-side.
+        $names = $pending->pluck('name')->unique()->values();
+        $existing = Item::where('status', 'confirmed')
+            ->whereIn('name', $names)
+            ->with(['protections', 'affects', 'flags', 'logFile'])
+            ->get()
+            ->groupBy('name');
+
+        return view('mudlogs.pending', compact('pending', 'existing'));
+    }
+
+    public function confirmPending(Item $item)
+    {
+        abort_unless($item->status === 'pending', 404);
+        $item->update(['status' => 'confirmed']);
+        return back()->with('status', 'Item added.');
+    }
+
+    public function ignorePending(Item $item)
+    {
+        abort_unless($item->status === 'pending', 404);
+        $item->delete();
+        return back()->with('status', 'Item ignored.');
     }
 }
