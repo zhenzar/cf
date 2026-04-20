@@ -95,7 +95,7 @@ class LogScanner
         $logFile->source = $source;
         $logFile->size = $size;
         $logFile->content_hash = $contentHash;
-        $logFile->content = $content;
+        // Note: content not stored to keep DB small; re-read from disk if needed
         $logFile->scanned_at = now();
         $logFile->save();
 
