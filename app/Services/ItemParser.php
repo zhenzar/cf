@@ -163,7 +163,11 @@ class ItemParser
                 $data['item_type'] = ucfirst($type);
 
                 $rest = $m[2];
-                if (preg_match('/worn (?:about|on|around) the (.+?)\./i', $rest, $sm)) {
+                if (preg_match('/worn\s+as\s+a\s+shield/i', $rest)) {
+                    // "It is armor worn as a shield." → treat as shield
+                    $data['item_type'] = 'Shield';
+                    $data['slot'] = 'Shield';
+                } elseif (preg_match('/worn (?:about|on|around) the (.+?)\./i', $rest, $sm)) {
                     $data['slot'] = ucfirst(strtolower(trim($sm[1])));
                 } elseif (stripos($rest, 'wielded') !== false || $data['item_type'] === 'Weapon') {
                     $data['slot'] = 'Weapon';
@@ -328,6 +332,29 @@ class ItemParser
 
         // Dedup flags.
         $data['flags'] = array_values(array_unique($data['flags']));
+
+        // Infer a slot from the item name when it isn't explicit (mostly jewelry/treasure items).
+        if (! $data['slot'] && $data['name']) {
+            $name = strtolower($data['name']);
+            $nameSlot = [
+                'Finger'   => ['ring', 'signet'],
+                'Neck'     => ['amulet', 'necklace', 'pendant', 'locket', 'medallion', 'torc', 'torque', 'choker', 'collar'],
+                'Wrist'    => ['bracelet', 'wristband'],
+                'Arms'     => ['bracer'],
+                'Waist'    => ['belt', 'girdle', 'sash'],
+                'Face'     => ['earring', 'eye patch', 'eyepatch', 'mask', 'monocle', 'goggles', 'spectacles', 'glasses'],
+                'Head'     => ['crown', 'tiara', 'circlet', 'coronet', 'diadem'],
+                'Hands'    => ['gloves', 'gauntlets', 'mittens'],
+            ];
+            foreach ($nameSlot as $slot => $words) {
+                foreach ($words as $w) {
+                    if (preg_match('/\b' . preg_quote($w, '/') . '\b/', $name)) {
+                        $data['slot'] = $slot;
+                        break 2;
+                    }
+                }
+            }
+        }
 
         // Require at least a name to be considered valid.
         if (! $data['name']) {
