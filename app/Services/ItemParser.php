@@ -72,6 +72,13 @@ class ItemParser
 
         if (empty($merged)) return null;
 
+        // Skip items with a terrible, unholy blessing (cursed/undesirable items).
+        foreach ($merged as $l) {
+            if (preg_match('/imbued with a terrible,?\s*unholy blessing/i', $l)) {
+                return null;
+            }
+        }
+
         $data = [
             'name' => null,
             'keyword' => null,
