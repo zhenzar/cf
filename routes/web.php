@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CharacterController;
+use App\Http\Controllers\MudLogController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,14 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('characters', CharacterController::class)
         ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
+
+    Route::get('mudlogs', [MudLogController::class, 'index'])->name('mudlogs.index');
+    Route::get('mudlogs/items', [MudLogController::class, 'items'])->name('mudlogs.items');
+    Route::post('mudlogs/scan', [MudLogController::class, 'scan'])->name('mudlogs.scan');
+    Route::post('mudlogs/upload', [MudLogController::class, 'upload'])->name('mudlogs.upload');
+    Route::get('mudlogs/{mudlog}', [MudLogController::class, 'show'])->name('mudlogs.show');
+    Route::post('mudlogs/{mudlog}/toggle', [MudLogController::class, 'toggleReviewed'])->name('mudlogs.toggle');
+    Route::delete('mudlogs/{mudlog}', [MudLogController::class, 'destroy'])->name('mudlogs.destroy');
 });
 
 require __DIR__.'/auth.php';
