@@ -133,6 +133,11 @@
                     @csrf
                     <button class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700">Rescan All</button>
                 </form>
+                <form method="POST" action="{{ route('mudlogs.clear-database') }}"
+                      onsubmit="return confirm('WARNING: Delete ALL items? This cannot be undone. Log files will be preserved.');">
+                    @csrf
+                    <button class="px-4 py-2 bg-red-700 text-white text-sm rounded-md hover:bg-red-800">Clear Items DB</button>
+                </form>
             </div>
 
             <form method="POST" action="{{ route('mudlogs.bulk') }}"

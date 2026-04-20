@@ -347,4 +347,23 @@ class MudLogController extends Controller
         $item->delete();
         return back()->with('status', 'Item ignored.');
     }
+
+    /**
+     * Clear all items from database and reset log file counts.
+     */
+    public function clearDatabase()
+    {
+        // Delete all item relations first via truncate
+        DB::statement('DELETE FROM item_protections');
+        DB::statement('DELETE FROM item_affects');
+        DB::statement('DELETE FROM item_flags');
+        DB::statement('DELETE FROM item_spells');
+        DB::statement('DELETE FROM item_log_file');
+        DB::statement('DELETE FROM items');
+
+        // Reset log file counts
+        LogFile::query()->update(['items_count' => 0, 'scanned_at' => null]);
+
+        return back()->with('status', 'Item database cleared. ' . LogFile::count() . ' log files preserved.');
+    }
 }

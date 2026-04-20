@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::post('mudlogs/pending/{item}/ignore', [MudLogController::class, 'ignorePending'])->name('mudlogs.pending.ignore');
     Route::post('mudlogs/scan', [MudLogController::class, 'scan'])->name('mudlogs.scan');
     Route::post('mudlogs/rescan-all', [MudLogController::class, 'rescanAll'])->name('mudlogs.rescan-all');
+    Route::post('mudlogs/clear-database', [MudLogController::class, 'clearDatabase'])->name('mudlogs.clear-database');
     Route::post('mudlogs/bulk', [MudLogController::class, 'bulk'])->name('mudlogs.bulk');
     Route::post('mudlogs/failed/{uuid}/retry', [MudLogController::class, 'retryFailedJob'])->name('mudlogs.failed.retry');
     Route::post('mudlogs/failed/{uuid}/forget', [MudLogController::class, 'forgetFailedJob'])->name('mudlogs.failed.forget');
