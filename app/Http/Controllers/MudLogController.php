@@ -162,7 +162,7 @@ class MudLogController extends Controller
     {
         $request->validate([
             'files' => ['required', 'array'],
-            'files.*' => ['file', 'mimes:txt', 'max:51200'], // 50MB each
+            'files.*' => ['file', 'mimes:txt', 'max:10240'], // .txt only, max 10MB each
         ]);
 
         $storeDir = storage_path('app/mudlogs/uploads');

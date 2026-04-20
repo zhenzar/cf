@@ -61,12 +61,12 @@
                     <h3 class="font-semibold text-gray-800 mb-2">Upload log files</h3>
                     <form method="POST" action="{{ route('mudlogs.upload') }}" enctype="multipart/form-data" class="flex gap-2">
                         @csrf
-                        <input type="file" name="files[]" multiple accept=".txt" class="flex-1 text-sm">
+                        <input type="file" name="files[]" multiple required accept=".txt,text/plain" class="flex-1 text-sm">
                         <button class="px-4 py-2 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-700">
                             Upload
                         </button>
                     </form>
-                    <p class="text-xs text-gray-500 mt-2">Uploaded files are stored under <code>storage/app/mudlogs/uploads/</code>.</p>
+                    <p class="text-xs text-gray-500 mt-2">Only <code>.txt</code> files, max 10&nbsp;MB each. Select multiple files at once.</p>
                 </div>
             </div>
 
