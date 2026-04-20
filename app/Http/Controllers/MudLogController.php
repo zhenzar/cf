@@ -97,32 +97,66 @@ class MudLogController extends Controller
 
     public function items(Request $request)
     {
-        $q = trim((string) $request->query('q', ''));
-        $type = $request->query('type');
-        $slot = $request->query('slot');
-
-        $query = Item::query()
+        $all = Item::query()
             ->where('status', 'confirmed')
             ->with(['logFile', 'protections', 'affects', 'flags'])
-            ->orderBy('name');
+            ->orderBy('level')->orderBy('name')
+            ->get();
 
-        if ($q !== '') {
-            $query->where(function ($w) use ($q) {
-                $w->where('name', 'like', "%{$q}%")
-                  ->orWhere('keyword', 'like', "%{$q}%")
-                  ->orWhere('material', 'like', "%{$q}%");
-            });
+        // Preferred slot order (non-weapons). Slot 'Finger' is shown as 'Rings'.
+        $slotOrder = ['Finger', 'Neck', 'Body', 'Head', 'Face', 'Legs', 'Feet', 'Hands', 'Arms', 'Waist', 'Wrist'];
+        $slotLabels = ['Finger' => 'Rings'];
+
+        // Preferred weapon-class order.
+        $weaponOrder = ['Axe', 'Sword', 'Mace', 'Whip', 'Flail', 'Dagger', 'Spear', 'Polearm', 'Staff', 'Club', 'Hammer', 'Bow', 'Crossbow'];
+
+        $groups = [];
+        foreach ($slotOrder as $s) {
+            $groups[$slotLabels[$s] ?? $s] = collect();
         }
-        if ($type) $query->where('item_type', $type);
-        if ($slot) $query->where('slot', $slot);
+        foreach ($weaponOrder as $wc) {
+            $groups[$wc] = collect();
+        }
 
-        $items = $query->paginate(50)->withQueryString();
+        $otherNonWeapon = collect();
+        $otherWeapon = collect();
 
-        $types = Item::whereNotNull('item_type')->where('status', 'confirmed')->distinct()->orderBy('item_type')->pluck('item_type');
-        $slots = Item::whereNotNull('slot')->where('status', 'confirmed')->distinct()->orderBy('slot')->pluck('slot');
+        foreach ($all as $item) {
+            if ($item->weapon_class) {
+                $key = ucfirst(strtolower($item->weapon_class));
+                if (array_key_exists($key, $groups)) {
+                    $groups[$key]->push($item);
+                } else {
+                    $otherWeapon->push($item);
+                }
+                continue;
+            }
+            $slot = $item->slot;
+            if ($slot && in_array($slot, $slotOrder, true)) {
+                $label = $slotLabels[$slot] ?? $slot;
+                $groups[$label]->push($item);
+            } else {
+                $otherNonWeapon->push($item);
+            }
+        }
+
+        // Append dynamic "Other" buckets for unknown weapon classes / unmapped slots.
+        if ($otherWeapon->isNotEmpty()) {
+            foreach ($otherWeapon->groupBy(fn ($i) => ucfirst(strtolower($i->weapon_class))) as $k => $v) {
+                $groups[$k] = $v->values();
+            }
+        }
+        if ($otherNonWeapon->isNotEmpty()) {
+            $groups['Other'] = $otherNonWeapon->values();
+        }
+
+        // Drop empty groups.
+        $groups = collect($groups)->filter(fn ($g) => $g->isNotEmpty())->all();
+
         $pendingCount = Item::where('status', 'pending')->count();
+        $totalCount = $all->count();
 
-        return view('mudlogs.items', compact('items', 'q', 'type', 'slot', 'types', 'slots', 'pendingCount'));
+        return view('mudlogs.items', compact('groups', 'pendingCount', 'totalCount'));
     }
 
     public function pending()
