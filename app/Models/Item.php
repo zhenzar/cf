@@ -21,7 +21,7 @@ class Item extends Model
      */
     public function computeStatsHash(): string
     {
-        $this->loadMissing(['protections', 'affects', 'flags']);
+        $this->loadMissing(['protections', 'affects', 'flags', 'spells']);
 
         $norm = function ($v) {
             if (is_string($v)) return trim(strtolower($v));
@@ -81,5 +81,10 @@ class Item extends Model
     public function flags(): HasMany
     {
         return $this->hasMany(ItemFlag::class);
+    }
+
+    public function spells(): HasMany
+    {
+        return $this->hasMany(ItemSpell::class);
     }
 }

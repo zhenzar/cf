@@ -89,11 +89,20 @@
                                             $item->protections->map(fn ($p) => $p->type)->implode(' '),
                                         ])));
                                     @endphp
-                                    <tr data-item data-search="{{ $searchBlob }}" x-show="matches($el)" x-cloak>
+                                    <tr data-item data-search="{{ $searchBlob }} {{ strtolower($item->spells->map(fn ($s) => $s->name)->implode(' ')) }}" x-show="matches($el)" x-cloak>
                                         <td class="px-3 py-2 font-medium text-gray-900">
                                             {{ $item->name }}
                                             @if ($item->keyword)
                                                 <div class="text-xs text-gray-400">{{ $item->keyword }}</div>
+                                            @endif
+                                            @if ($item->spells->isNotEmpty())
+                                                <div class="mt-1 flex flex-wrap gap-1">
+                                                    @foreach ($item->spells as $s)
+                                                        <span class="text-[10px] px-1.5 py-0.5 bg-purple-50 text-purple-700 rounded">
+                                                            {{ $s->name }}@if ($s->level) <span class="text-purple-400">(Lv {{ $s->level }})</span>@endif
+                                                        </span>
+                                                    @endforeach
+                                                </div>
                                             @endif
                                         </td>
                                         <td class="px-3 py-2 text-gray-600">{{ $item->level }}</td>

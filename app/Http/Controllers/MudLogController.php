@@ -98,7 +98,7 @@ class MudLogController extends Controller
     {
         $all = Item::query()
             ->where('status', 'confirmed')
-            ->with(['logFile', 'protections', 'affects', 'flags'])
+            ->with(['logFile', 'protections', 'affects', 'flags', 'spells'])
             ->orderBy('level')->orderBy('name')
             ->get();
 
@@ -161,7 +161,7 @@ class MudLogController extends Controller
     public function pending()
     {
         $pending = Item::where('status', 'pending')
-            ->with(['logFile', 'protections', 'affects', 'flags'])
+            ->with(['logFile', 'protections', 'affects', 'flags', 'spells'])
             ->orderBy('name')->orderBy('created_at')
             ->get();
 

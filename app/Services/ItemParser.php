@@ -92,6 +92,7 @@ class ItemParser
             'protections' => [],
             'affects' => [],
             'flags' => [],
+            'spells' => [],
             'raw_text' => implode("\n", $lines),
         ];
 
@@ -115,6 +116,36 @@ class ItemParser
             // Explicit miscellaneous type: "It is a miscellaneous object."
             if (preg_match('/^it is an?\s+miscellaneous\s+object/i', $line)) {
                 $data['item_type'] = 'Miscellaneous';
+                continue;
+            }
+
+            // Simple type-only lines: "It is a wand." / "It is a scroll." / "It is a staff." / "It is a potion." / "It is a container." / "It is food." / "It is a drink container."
+            if (preg_match('/^it is an?\s+(wand|scroll|staff|potion|container|drink container|key|light|food|trash|pill|money|fountain|armor|clothing|shield|weapon|treasure|instrument)\s*\.?\s*$/i', $line, $m)) {
+                $data['item_type'] = ucwords(strtolower($m[1]));
+                continue;
+            }
+
+            // "It is a thief tool." → Lockpicks
+            if (preg_match('/^it is an?\s+thief\s+tool\s*\.?\s*$/i', $line)) {
+                $data['item_type'] = 'Lockpicks';
+                continue;
+            }
+
+            // Wand / staff single spell: "It contains the spell 'X' of the Nth level."
+            if (preg_match("/contains the spell\s+'([^']+)'\s+of the\s+(\d+)(?:st|nd|rd|th)\s+level/i", $line, $m)) {
+                $data['spells'][] = ['name' => trim($m[1]), 'level' => (int) $m[2]];
+                continue;
+            }
+
+            // Scroll multi-spell: "Within it are contained level N spells of 'X' and 'Y'"
+            // or: "Within it are contained level N spells of 'X', 'Y' and 'Z'"
+            if (preg_match("/within it (?:are|is) contained level\s+(\d+)\s+spells?\s+of\s+(.+)$/i", $line, $m)) {
+                $level = (int) $m[1];
+                if (preg_match_all("/'([^']+)'/", $m[2], $sm)) {
+                    foreach ($sm[1] as $name) {
+                        $data['spells'][] = ['name' => trim($name), 'level' => $level];
+                    }
+                }
                 continue;
             }
 
@@ -236,14 +267,16 @@ class ItemParser
                 continue;
             }
 
-            // Alignment restrictions.
-            // "It is unusable for those of a pure soul." → +E (good cannot wield → item is evil-only)
-            if (preg_match('/unusable for those of a pure soul/i', $line)) {
-                $data['alignment'] = ($data['alignment'] ?? '') . '+E';
+            // Alignment restrictions (what CANNOT use it).
+            // "It is unusable for those of a pure soul." → -G (good cannot use it)
+            if (preg_match('/unusable for those of a pure soul/i', $line)
+                || preg_match('/pure soul cannot (?:use|wield) it/i', $line)) {
+                $data['alignment'] = ($data['alignment'] ?? '') . '-G';
                 continue;
             }
             // "It is unusable for those of a corrupt/dark soul." → -E
-            if (preg_match('/unusable for those of (?:a\s+)?(?:corrupt|dark|evil)\s+soul/i', $line)) {
+            if (preg_match('/unusable for those of (?:a\s+)?(?:corrupt|dark|evil)\s+soul/i', $line)
+                || preg_match('/(?:corrupt|dark|evil) soul cannot (?:use|wield) it/i', $line)) {
                 $data['alignment'] = ($data['alignment'] ?? '') . '-E';
                 continue;
             }

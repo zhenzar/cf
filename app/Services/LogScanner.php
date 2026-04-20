@@ -112,6 +112,9 @@ class LogScanner
                 foreach ($data['flags'] as $f) {
                     $item->flags()->create(['flag' => $f]);
                 }
+                foreach ($data['spells'] ?? [] as $s) {
+                    $item->spells()->create($s);
+                }
                 $itemsNew++;
             }
 
@@ -139,6 +142,9 @@ class LogScanner
         $flags = collect($d['flags'] ?? [])
             ->map(fn ($f) => strtolower($f))
             ->sort()->values()->all();
+        $spells = collect($d['spells'] ?? [])
+            ->map(fn ($s) => strtolower($s['name']) . ':' . ($s['level'] ?? ''))
+            ->sort()->values()->all();
 
         $payload = [
             'name'             => $norm($d['name'] ?? null),
@@ -160,6 +166,7 @@ class LogScanner
             'protections'      => $protections,
             'affects'          => $affects,
             'flags'            => $flags,
+            'spells'           => $spells,
         ];
 
         return hash('sha256', json_encode($payload));
