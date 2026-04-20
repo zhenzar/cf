@@ -145,10 +145,13 @@
                                     <td class="px-4 py-2 text-right">
                                         <div class="flex items-center justify-end gap-2">
                                             <button type="button"
-                                                    @click="if (confirm('Rescan {{ $file->filename }}?')) { const f = document.createElement('form'); f.method='POST'; f.action='{{ route('mudlogs.rescan', $file) }}'; f.innerHTML='@csrf'; document.body.appendChild(f); f.submit(); }"
+                                                    data-rescan-url="{{ route('mudlogs.rescan', $file) }}"
+                                                    data-filename="{{ $file->filename }}"
+                                                    @click="if (confirm('Rescan ' + $el.dataset.filename + '?')) { const f = document.getElementById('row-rescan-form'); f.action = $el.dataset.rescanUrl; f.submit(); }"
                                                     class="text-xs text-indigo-600 hover:text-indigo-900" title="Delete items and re-parse this file">Rescan</button>
                                             <button type="button"
-                                                    @click="if (confirm('Delete this log file and its items?')) { const f = document.createElement('form'); f.method='POST'; f.action='{{ route('mudlogs.destroy', $file) }}'; f.innerHTML='@csrf @method(\'DELETE\')'; document.body.appendChild(f); f.submit(); }"
+                                                    data-delete-url="{{ route('mudlogs.destroy', $file) }}"
+                                                    @click="if (confirm('Delete this log file and its items?')) { const f = document.getElementById('row-delete-form'); f.action = $el.dataset.deleteUrl; f.submit(); }"
                                                     class="text-xs text-red-600 hover:text-red-800">Delete</button>
                                         </div>
                                     </td>
@@ -162,6 +165,10 @@
                     </table>
                 </div>
             </form>
+
+            {{-- Hidden helper forms used by per-row Rescan/Delete buttons --}}
+            <form id="row-rescan-form" method="POST" class="hidden">@csrf</form>
+            <form id="row-delete-form" method="POST" class="hidden">@csrf @method('DELETE')</form>
 
             <div>{{ $files->links() }}</div>
         </div>
