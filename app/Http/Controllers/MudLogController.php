@@ -36,7 +36,33 @@ class MudLogController extends Controller
             'pending' => LogFile::where('reviewed', false)->count(),
         ];
 
-        return view('mudlogs.index', compact('files', 'q', 'filter', 'counts'));
+        $failedJobs = DB::table('failed_jobs')->orderByDesc('id')->limit(50)->get()
+            ->map(function ($row) {
+                $payload = json_decode($row->payload, true);
+                $command = $payload['data']['command'] ?? '';
+                $path = null;
+                $filename = null;
+                if ($command && preg_match('/"path";s:\d+:"([^"]*)"/', $command, $m)) {
+                    $path = $m[1];
+                }
+                if ($command && preg_match('/"filename";s:\d+:"([^"]*)"/', $command, $m)) {
+                    $filename = $m[1];
+                }
+                $exception = $row->exception ?? '';
+                $firstLine = strtok($exception, "\n");
+                return (object) [
+                    'id' => $row->id,
+                    'uuid' => $row->uuid,
+                    'job_name' => $payload['displayName'] ?? 'Unknown job',
+                    'path' => $path,
+                    'filename' => $filename ?: ($path ? basename($path) : null),
+                    'message' => $firstLine,
+                    'exception' => $exception,
+                    'failed_at' => $row->failed_at,
+                ];
+            });
+
+        return view('mudlogs.index', compact('files', 'q', 'filter', 'counts', 'failedJobs'));
     }
 
     public function show(LogFile $mudlog)
@@ -56,6 +82,33 @@ class MudLogController extends Controller
     {
         $mudlog->delete();
         return redirect()->route('mudlogs.index')->with('status', 'Log file deleted.');
+    }
+
+    /**
+     * Retry a single failed job by uuid.
+     */
+    public function retryFailedJob(string $uuid)
+    {
+        \Artisan::call('queue:retry', ['id' => [$uuid]]);
+        return back()->with('status', 'Failed job queued for retry.');
+    }
+
+    /**
+     * Forget a single failed job by uuid.
+     */
+    public function forgetFailedJob(string $uuid)
+    {
+        DB::table('failed_jobs')->where('uuid', $uuid)->delete();
+        return back()->with('status', 'Failed job removed.');
+    }
+
+    /**
+     * Remove all failed jobs.
+     */
+    public function flushFailedJobs()
+    {
+        DB::table('failed_jobs')->delete();
+        return back()->with('status', 'All failed jobs removed.');
     }
 
     /**

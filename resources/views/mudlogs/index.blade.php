@@ -26,15 +26,61 @@
             @endif
 
             @php($queued = \Illuminate\Support\Facades\DB::table('jobs')->count())
-            @php($failed = \Illuminate\Support\Facades\DB::table('failed_jobs')->count())
-            @if ($queued > 0 || $failed > 0)
+            @if ($queued > 0)
                 <div class="p-3 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded flex items-center justify-between" x-data x-init="setTimeout(() => location.reload(), 5000)">
                     <span>
-                        @if ($queued > 0) <strong>{{ $queued }}</strong> job(s) in queue. @endif
-                        @if ($failed > 0) <strong class="text-red-700">{{ $failed }}</strong> failed. @endif
-                        Run <code class="bg-white px-1 rounded">php artisan queue:work</code> to process.
+                        <strong>{{ $queued }}</strong> job(s) in queue. Run <code class="bg-white px-1 rounded">php artisan queue:work</code> to process.
                     </span>
                     <span class="text-xs text-blue-500">auto-refresh 5s</span>
+                </div>
+            @endif
+
+            @if ($failedJobs->isNotEmpty())
+                <div class="bg-red-50 border border-red-200 rounded" x-data="{ open: true, details: {} }">
+                    <div class="flex items-center justify-between px-3 py-2 text-sm">
+                        <button type="button" @click="open = !open" class="font-semibold text-red-800 hover:text-red-900 flex items-center gap-2">
+                            <span x-text="open ? '▼' : '▶'"></span>
+                            {{ $failedJobs->count() }} failed job(s)
+                        </button>
+                        <form method="POST" action="{{ route('mudlogs.failed.flush') }}"
+                              onsubmit="return confirm('Remove all failed jobs?');">
+                            @csrf
+                            <button class="text-xs text-red-700 hover:text-red-900 underline">Clear all</button>
+                        </form>
+                    </div>
+                    <div x-show="open" x-cloak class="border-t border-red-200 divide-y divide-red-100 text-sm">
+                        @foreach ($failedJobs as $fj)
+                            <div class="px-3 py-2">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="font-medium text-red-900 truncate" title="{{ $fj->path }}">
+                                            {{ $fj->filename ?? $fj->job_name }}
+                                        </div>
+                                        @if ($fj->path)
+                                            <div class="text-[11px] text-red-700/70 truncate">{{ $fj->path }}</div>
+                                        @endif
+                                        <div class="text-xs text-red-800 mt-1">{{ $fj->message }}</div>
+                                        <div class="text-[10px] text-red-500 mt-0.5">{{ $fj->failed_at }}</div>
+                                    </div>
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <button type="button"
+                                                @click="details['{{ $fj->uuid }}'] = !details['{{ $fj->uuid }}']"
+                                                class="text-xs text-red-700 hover:text-red-900">Details</button>
+                                        <form method="POST" action="{{ route('mudlogs.failed.retry', $fj->uuid) }}">
+                                            @csrf
+                                            <button class="text-xs text-indigo-700 hover:text-indigo-900">Retry</button>
+                                        </form>
+                                        <form method="POST" action="{{ route('mudlogs.failed.forget', $fj->uuid) }}">
+                                            @csrf
+                                            <button class="text-xs text-gray-600 hover:text-gray-900">Forget</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <pre x-show="details['{{ $fj->uuid }}']" x-cloak
+                                     class="mt-2 p-2 bg-red-100 text-[10px] text-red-900 overflow-auto max-h-48 rounded whitespace-pre-wrap break-all">{{ $fj->exception }}</pre>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             @endif
             @if ($errors->any())
