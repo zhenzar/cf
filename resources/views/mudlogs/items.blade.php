@@ -71,6 +71,7 @@
                                     <th class="px-3 py-2">Lvl</th>
                                     <th class="px-3 py-2">Material</th>
                                     <th class="px-3 py-2">Align</th>
+                                    <th class="px-3 py-2 cursor-help" title="Piercing, Bashing, Slashing, Magic, Element">Armor</th>
                                     <th class="px-3 py-2">Affects</th>
                                     <th class="px-3 py-2">Flags</th>
                                     <th class="px-3 py-2">Source</th>
@@ -102,16 +103,31 @@
                                                 <span class="text-xs px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-mono">{{ $item->alignment }}</span>
                                             @endif
                                         </td>
+                                        <td class="px-3 py-2 font-mono text-xs text-gray-700 whitespace-nowrap" title="Piercing, Bashing, Slashing, Magic, Element">
+                                            @php
+                                                $protMap = $item->protections->mapWithKeys(fn ($p) => [strtolower($p->type) => $p->value]);
+                                                $hasArmor = collect(['piercing','bashing','slashing','magic','element'])
+                                                    ->contains(fn ($t) => $protMap->has($t));
+                                            @endphp
+                                            @if ($hasArmor)
+                                                {{ implode(' ', array_map(fn ($t) => $protMap[$t] ?? '-', ['piercing','bashing','slashing','magic','element'])) }}
+                                                @php
+                                                    $extra = $item->protections->filter(fn ($p) => ! in_array(strtolower($p->type), ['piercing','bashing','slashing','magic','element'], true));
+                                                @endphp
+                                                @if ($extra->isNotEmpty())
+                                                    <div class="mt-0.5 flex flex-wrap gap-1">
+                                                        @foreach ($extra as $p)
+                                                            <span class="px-1 py-0.5 bg-blue-50 text-blue-700 rounded">{{ $p->type }} {{ $p->value }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            @endif
+                                        </td>
                                         <td class="px-3 py-2">
                                             <div class="flex flex-wrap gap-1">
                                                 @foreach ($item->affects as $a)
                                                     <span class="text-xs px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded">
                                                         {{ $a->stat }} {{ $a->modifier > 0 ? '+'.$a->modifier : $a->modifier }}
-                                                    </span>
-                                                @endforeach
-                                                @foreach ($item->protections as $p)
-                                                    <span class="text-xs px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded">
-                                                        {{ $p->type }} {{ $p->value }}
                                                     </span>
                                                 @endforeach
                                             </div>

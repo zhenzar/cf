@@ -31,3 +31,4 @@ M	Incardine Spray	Day of the Sun, 1pm
 S	Bloody Sheshani	Day of the Sun, 2pm
 M	The Sirine's Dirge	Day of the Sun, 4pm
 S	Coeur Rouge	Day of the Great Sun, 5pm
+N	Outlaying Outcast	Day of Deception, 6am
