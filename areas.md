@@ -157,3 +157,11 @@
 |   All   | Various           - Galadon #http://wiki.qhcf.net/index.php?title=Galadon
 |   All   | Pet/Aeon          - Udgaard #http://wiki.qhcf.net/index.php?title=Udgaard
 |   All   | Vass/Rad          - Seantryn Modan #http://wiki.qhcf.net/index.php?title=Seantryn_Modan
+|   All   | Scarabaeus        - Eaststride Road #http://wiki.qhcf.net/index.php?title=EaststrideRoad
+|   All   | Scarabaeus        - Bramblefield Road #http://wiki.qhcf.net/index.php?title=Bramblefield_Road
+|   All   | Scarabaeus        - Silverpine Road #http://wiki.qhcf.net/index.php?title=Silverpine_Road
+|   All   | Vassagon          - West Sumner's Road #http://wiki.qhcf.net/index.php?title=NorthernRoads
+|   All   | Thror             - A Wagon-Marked Road 
+|   All   | Pico/Iukuru/Ysaloerye - The Ancient Road to the Wastes
+|   All   | Andaren/Kastellyn - The Eastern Road #http://wiki.qhcf.net/index.php?title=EasternRoad
+|   All   | Gareth/Ashaxreyn  - A Virgin Forest #http://wiki.qhcf.net/index.php?title=A_Virgin_Forest
