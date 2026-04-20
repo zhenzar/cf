@@ -12,7 +12,7 @@ class Item extends Model
         'log_file_id', 'name', 'keyword', 'worth_copper', 'level',
         'item_type', 'slot', 'material', 'weight_pounds', 'weight_ounces',
         'weapon_class', 'weapon_qualifier', 'damage_type', 'attack_type',
-        'damage_dice', 'av_damage', 'raw_text', 'hash', 'stats_hash', 'status',
+        'damage_dice', 'av_damage', 'alignment', 'raw_text', 'hash', 'stats_hash', 'status',
     ];
 
     /**
@@ -54,6 +54,7 @@ class Item extends Model
             'attack_type'      => $norm($this->attack_type),
             'damage_dice'      => $norm($this->damage_dice),
             'av_damage'        => $this->av_damage,
+            'alignment'        => $norm($this->alignment),
             'protections'      => $protections,
             'affects'          => $affects,
             'flags'            => $flags,

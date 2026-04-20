@@ -53,7 +53,7 @@
                                 <td class="px-3 py-2 font-medium">{{ $item->name }}
                                     @if ($item->keyword) <div class="text-xs text-gray-400">{{ $item->keyword }}</div>@endif
                                 </td>
-                                <td class="px-3 py-2">{{ $item->item_type }}</td>
+                                <td class="px-3 py-2">{{ $item->weapon_class ?: $item->item_type }}</td>
                                 <td class="px-3 py-2">{{ $item->slot }}</td>
                                 <td class="px-3 py-2">{{ $item->level }}</td>
                                 <td class="px-3 py-2">{{ $item->material }}</td>

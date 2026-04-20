@@ -86,6 +86,7 @@ class ItemParser
             'weapon_qualifier' => null,
             'damage_type' => null,
             'attack_type' => null,
+            'alignment' => null,
             'damage_dice' => null,
             'av_damage' => null,
             'protections' => [],
@@ -108,6 +109,12 @@ class ItemParser
             if (preg_match('/worth\s+([\d,]+)\s+copper.*?(\d+)(?:st|nd|rd|th)\s+level/i', $line, $m)) {
                 $data['worth_copper'] = (int) str_replace(',', '', $m[1]);
                 $data['level'] = (int) $m[2];
+                continue;
+            }
+
+            // Explicit miscellaneous type: "It is a miscellaneous object."
+            if (preg_match('/^it is an?\s+miscellaneous\s+object/i', $line)) {
+                $data['item_type'] = 'Miscellaneous';
                 continue;
             }
 
@@ -218,6 +225,32 @@ class ItemParser
             }
             if (preg_match('/magical aura surrounds it/i', $line)) {
                 $data['flags'][] = 'magical';
+                continue;
+            }
+            if (preg_match('/chilling aura of evil/i', $line)) {
+                $data['flags'][] = 'evil';
+                continue;
+            }
+            if (preg_match('/warm aura of good/i', $line)) {
+                $data['flags'][] = 'good';
+                continue;
+            }
+
+            // Alignment restrictions.
+            // "It is unusable for those of a pure soul." → +E (good cannot wield → item is evil-only)
+            if (preg_match('/unusable for those of a pure soul/i', $line)) {
+                $data['alignment'] = ($data['alignment'] ?? '') . '+E';
+                continue;
+            }
+            // "It is unusable for those of a corrupt/dark soul." → -E
+            if (preg_match('/unusable for those of (?:a\s+)?(?:corrupt|dark|evil)\s+soul/i', $line)) {
+                $data['alignment'] = ($data['alignment'] ?? '') . '-E';
+                continue;
+            }
+            // "Those with a balanced soul cannot use it." → -N
+            if (preg_match('/(?:those with|for those of)\s+a\s+balanced\s+soul\s+cannot use it/i', $line)
+                || preg_match('/balanced soul cannot (?:use|wield) it/i', $line)) {
+                $data['alignment'] = ($data['alignment'] ?? '') . '-N';
                 continue;
             }
             if (preg_match('/^it (?:glows|emanates|radiates|hums|emits|is humming|is glowing)\b/i', $line, $m)) {

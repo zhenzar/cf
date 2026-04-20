@@ -38,9 +38,11 @@
                             @endif
                         </div>
                         <div class="text-xs text-gray-600 text-right space-y-0.5">
-                            @if ($item->item_type)  <div><strong>{{ $item->item_type }}</strong> @if($item->slot)— {{ $item->slot }} @endif</div>@endif
+                            @php($displayType = $item->weapon_class ?: $item->item_type)
+                            @if ($displayType)  <div><strong>{{ $displayType }}</strong> @if($item->slot)— {{ $item->slot }} @endif</div>@endif
                             @if ($item->level !== null) <div>Level {{ $item->level }}</div> @endif
                             @if ($item->worth_copper !== null) <div>{{ number_format($item->worth_copper) }} copper</div> @endif
+                            @if ($item->alignment) <div><span class="text-gray-500">Align:</span> <span class="font-mono">{{ $item->alignment }}</span></div> @endif
                         </div>
                     </div>
 

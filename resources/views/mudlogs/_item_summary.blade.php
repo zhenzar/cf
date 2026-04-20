@@ -1,11 +1,13 @@
 @php($i = $item)
 <div class="text-sm space-y-1">
+    @php($displayType = $i->weapon_class ?: $i->item_type)
     <div class="flex flex-wrap gap-2 text-xs text-gray-600">
-        @if ($i->item_type)<span><strong>{{ $i->item_type }}</strong>@if($i->slot) · {{ $i->slot }}@endif</span>@endif
+        @if ($displayType)<span><strong>{{ $displayType }}</strong>@if($i->slot) · {{ $i->slot }}@endif</span>@endif
         @if ($i->level !== null)<span>Lvl {{ $i->level }}</span>@endif
         @if ($i->worth_copper !== null)<span>{{ number_format($i->worth_copper) }} cp</span>@endif
         @if ($i->material)<span>{{ $i->material }}</span>@endif
         @if ($i->weight_pounds !== null)<span>{{ $i->weight_pounds }}lb {{ $i->weight_ounces ?? 0 }}oz</span>@endif
+        @if ($i->alignment)<span class="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-mono">{{ $i->alignment }}</span>@endif
         @if ($i->keyword)<span class="text-gray-400">'{{ $i->keyword }}'</span>@endif
     </div>
     @if ($i->weapon_class)
