@@ -61,12 +61,28 @@ class LogScanner
         $size = $size ?? strlen($content);
         $contentHash = hash('sha256', $content);
 
-        // Skip if we've already ingested a file with identical content.
+        // If another record already holds this exact content, update this path's record
+        // to reflect it was processed and link the other's items via the pivot so this
+        // file shows up populated instead of empty.
         $existingByHash = LogFile::where('content_hash', $contentHash)
             ->where('path', '!=', $path)
             ->first();
         if ($existingByHash) {
-            return ['log_file' => $existingByHash, 'items_new' => 0, 'new_file' => false];
+            $logFile = LogFile::firstOrNew(['path' => $path]);
+            $logFile->filename = $filename;
+            $logFile->source = $source;
+            $logFile->size = $size;
+            $logFile->content_hash = null; // unique index; only one row owns the hash
+            $logFile->scanned_at = now();
+            $logFile->save();
+
+            foreach ($existingByHash->items()->pluck('items.id') as $iid) {
+                $logFile->items()->syncWithoutDetaching([$iid => ['created_at' => now()]]);
+            }
+            $logFile->items_count = $logFile->items()->count();
+            $logFile->save();
+
+            return ['log_file' => $logFile, 'items_new' => 0, 'new_file' => false];
         }
 
         $logFile = LogFile::firstOrNew(['path' => $path]);

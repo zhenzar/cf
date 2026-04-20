@@ -153,7 +153,6 @@
                                     <input type="checkbox" @click="toggleAll()" :checked="all"
                                            class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                 </th>
-                                <th class="px-4 py-2 w-12">Done</th>
                                 <th class="px-4 py-2">File</th>
                                 <th class="px-4 py-2 w-24">Items</th>
                                 <th class="px-4 py-2 w-28">Source</th>
@@ -170,15 +169,12 @@
                                                class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                     </td>
                                     <td class="px-4 py-2">
-                                        <input type="checkbox"
-                                               @checked($file->reviewed)
-                                               onchange="event.stopPropagation(); fetch('{{ route('mudlogs.toggle', $file) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' } }).then(() => location.reload())"
-                                               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                    </td>
-                                    <td class="px-4 py-2">
                                         <a href="{{ route('mudlogs.show', $file) }}" class="text-indigo-600 hover:text-indigo-900 font-medium">
                                             {{ $file->filename }}
                                         </a>
+                                        @if ($file->reviewed)
+                                            <span class="ml-1 text-[10px] px-1.5 py-0.5 bg-green-100 text-green-700 rounded">reviewed</span>
+                                        @endif
                                         <div class="text-xs text-gray-500 truncate max-w-xl" title="{{ $file->path }}">
                                             {{ $file->path }}
                                         </div>
@@ -203,7 +199,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="7" class="px-4 py-8 text-center text-gray-500 text-sm">
+                                <tr><td colspan="6" class="px-4 py-8 text-center text-gray-500 text-sm">
                                     No log files yet. Scan a directory or upload files above.
                                 </td></tr>
                             @endforelse
