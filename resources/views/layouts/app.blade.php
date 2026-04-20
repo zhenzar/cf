@@ -15,22 +15,36 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+        <div class="min-h-screen bg-gray-100 flex" x-data="{ sidebarOpen: false }">
+            @auth
+                @include('layouts.sidebar')
+            @endauth
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+            <div class="flex-1 min-w-0 flex flex-col">
+                @auth
+                    <div class="md:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+                        <button @click="sidebarOpen = !sidebarOpen" class="text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                        </button>
+                        <span class="font-semibold text-gray-800">{{ config('app.name', 'CF') }}</span>
+                        <span></span>
                     </div>
-                </header>
-            @endisset
+                @endauth
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+                @isset($header)
+                    <header class="bg-white shadow">
+                        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                            {{ $header }}
+                        </div>
+                    </header>
+                @endisset
+
+                <main class="flex-1">
+                    {{ $slot }}
+                </main>
+            </div>
         </div>
     </body>
 </html>

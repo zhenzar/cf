@@ -24,6 +24,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('characters', CharacterController::class)
         ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
 
+    Route::post('active-character', [CharacterController::class, 'setActive'])->name('active-character.set');
+    Route::get('areas', [CharacterController::class, 'areasIndex'])->name('areas.index');
+
     Route::get('mudlogs', [MudLogController::class, 'index'])->name('mudlogs.index');
     Route::get('mudlogs/items', [MudLogController::class, 'items'])->name('mudlogs.items');
     Route::get('mudlogs/pending', [MudLogController::class, 'pending'])->name('mudlogs.pending');

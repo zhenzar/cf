@@ -196,6 +196,51 @@ class CharacterController extends Controller
 
         $character->delete();
 
+        if ((int) session('active_character_id') === $character->id) {
+            session()->forget('active_character_id');
+        }
+
         return redirect()->route('characters.index')->with('status', 'Character deleted.');
+    }
+
+    /**
+     * Set the active character stored in session (used by the sidebar selector).
+     * Passing id=0 clears the selection.
+     */
+    public function setActive(Request $request)
+    {
+        $id = (int) $request->input('character_id', 0);
+        if ($id === 0) {
+            session()->forget('active_character_id');
+        } else {
+            $character = Character::where('user_id', Auth::id())->findOrFail($id);
+            session(['active_character_id' => $character->id]);
+        }
+        return back();
+    }
+
+    /**
+     * Areas overview.
+     * - If a character is active in the session → show that character's tracked areas.
+     * - Otherwise → plain list of all areas.
+     */
+    public function areasIndex(Request $request)
+    {
+        $activeId = session('active_character_id');
+        if ($activeId) {
+            $character = Character::where('user_id', Auth::id())->find($activeId);
+            if ($character) {
+                return $this->areas($request, $character);
+            }
+        }
+
+        $q = trim((string) $request->query('q', ''));
+        $query = Area::orderBy('realm')->orderBy('name');
+        if ($q !== '') {
+            $query->where('name', 'like', "%{$q}%");
+        }
+        $areas = $query->get();
+
+        return view('areas.index', compact('areas', 'q'));
     }
 }
