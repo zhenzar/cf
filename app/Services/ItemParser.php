@@ -127,7 +127,7 @@ class ItemParser
             }
 
             // Simple type-only lines: "It is a wand." / "It is a scroll." / "It is a staff." / "It is a potion." / "It is a container." / "It is food." / "It is a drink container."
-            if (preg_match('/^it is an?\s+(wand|scroll|staff|potion|container|drink container|key|light|food|trash|pill|money|fountain|armor|clothing|shield|weapon|treasure|instrument)\s*\.?\s*$/i', $line, $m)) {
+            if (preg_match('/^it is an?\s+(wand|scroll|staff|potion|talisman|container|drink container|key|light|food|trash|pill|money|fountain|armor|clothing|shield|weapon|treasure|instrument)\s*\.?\s*$/i', $line, $m)) {
                 $data['item_type'] = ucwords(strtolower($m[1]));
                 continue;
             }
