@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::post('mudlogs/upload', [MudLogController::class, 'upload'])->name('mudlogs.upload');
     Route::get('mudlogs/{mudlog}', [MudLogController::class, 'show'])->name('mudlogs.show');
     Route::post('mudlogs/{mudlog}/toggle', [MudLogController::class, 'toggleReviewed'])->name('mudlogs.toggle');
+    Route::post('mudlogs/{mudlog}/rescan', [MudLogController::class, 'rescan'])->name('mudlogs.rescan');
     Route::delete('mudlogs/{mudlog}', [MudLogController::class, 'destroy'])->name('mudlogs.destroy');
 });
 

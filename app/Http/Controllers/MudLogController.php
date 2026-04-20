@@ -57,6 +57,25 @@ class MudLogController extends Controller
         return redirect()->route('mudlogs.index')->with('status', 'Log file deleted.');
     }
 
+    /**
+     * Re-parse a single log file. Deletes its existing items first, then
+     * queues a fresh ingest so the updated parser rules apply.
+     */
+    public function rescan(LogFile $mudlog)
+    {
+        if (! is_file($mudlog->path)) {
+            return back()->withErrors(['path' => "File no longer exists: {$mudlog->path}"]);
+        }
+
+        // Remove this file's items so re-ingest isn't blocked by dedup against itself.
+        $mudlog->items()->delete();
+        $mudlog->update(['scanned_at' => null, 'items_count' => 0]);
+
+        IngestLogFile::dispatch($mudlog->path, $mudlog->filename, $mudlog->source ?? 'scan');
+
+        return back()->with('status', "Rescan queued for {$mudlog->filename}.");
+    }
+
     public function scan(Request $request)
     {
         $data = $request->validate([

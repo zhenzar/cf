@@ -4,7 +4,13 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight truncate max-w-3xl" title="{{ $file->path }}">
                 {{ $file->filename }}
             </h2>
-            <a href="{{ route('mudlogs.index') }}" class="text-sm text-gray-600 hover:text-gray-900">&larr; Back</a>
+            <div class="flex items-center gap-3 text-sm">
+                <form method="POST" action="{{ route('mudlogs.rescan', $file) }}">
+                    @csrf
+                    <button class="text-indigo-600 hover:text-indigo-900" title="Delete items and re-parse this file">Rescan</button>
+                </form>
+                <a href="{{ route('mudlogs.index') }}" class="text-gray-600 hover:text-gray-900">&larr; Back</a>
+            </div>
         </div>
     </x-slot>
 

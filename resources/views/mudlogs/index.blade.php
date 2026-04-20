@@ -119,11 +119,17 @@
                                     {{ $file->scanned_at?->diffForHumans() ?? '—' }}
                                 </td>
                                 <td class="px-4 py-2 text-right">
-                                    <form method="POST" action="{{ route('mudlogs.destroy', $file) }}"
-                                          onsubmit="return confirm('Delete this log file and its items?')">
-                                        @csrf @method('DELETE')
-                                        <button class="text-xs text-red-600 hover:text-red-800">Delete</button>
-                                    </form>
+                                    <div class="flex items-center justify-end gap-2">
+                                        <form method="POST" action="{{ route('mudlogs.rescan', $file) }}">
+                                            @csrf
+                                            <button class="text-xs text-indigo-600 hover:text-indigo-900" title="Delete items and re-parse this file">Rescan</button>
+                                        </form>
+                                        <form method="POST" action="{{ route('mudlogs.destroy', $file) }}"
+                                              onsubmit="return confirm('Delete this log file and its items?')">
+                                            @csrf @method('DELETE')
+                                            <button class="text-xs text-red-600 hover:text-red-800">Delete</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
