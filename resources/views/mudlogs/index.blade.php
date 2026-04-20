@@ -25,10 +25,8 @@
                 </div>
             @endif
 
-            @php
-                $queued = \Illuminate\Support\Facades\DB::table('jobs')->count();
-                $failed = \Illuminate\Support\Facades\DB::table('failed_jobs')->count();
-            @endphp
+            @php($queued = \Illuminate\Support\Facades\DB::table('jobs')->count())
+            @php($failed = \Illuminate\Support\Facades\DB::table('failed_jobs')->count())
             @if ($queued > 0 || $failed > 0)
                 <div class="p-3 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded flex items-center justify-between" x-data x-init="setTimeout(() => location.reload(), 5000)">
                     <span>
