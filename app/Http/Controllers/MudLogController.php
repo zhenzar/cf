@@ -251,7 +251,7 @@ class MudLogController extends Controller
         $weaponOrder = ['Axe', 'Sword', 'Mace', 'Whip', 'Flail', 'Dagger', 'Spear', 'Polearm', 'Staff', 'Club', 'Hammer', 'Bow', 'Crossbow'];
 
         // Item types that should get their own top-level group (not tied to slot/weapon_class).
-        $typeGroups = ['Shield', 'Potion', 'Scroll', 'Wand', 'Talisman', 'Lockpicks'];
+        $typeGroups = ['Shield', 'Potion', 'Scroll', 'Wand', 'Talisman', 'Lockpicks', 'Food', 'Treasure', 'Miscellaneous', 'Drink Container', 'Key', 'Container', 'Instrument', 'Light'];
 
         $groups = [];
         foreach ($slotOrder as $s) {
