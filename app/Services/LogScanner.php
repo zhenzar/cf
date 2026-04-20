@@ -76,8 +76,12 @@ class LogScanner
                 $hash = hash('sha256', $data['raw_text']);
                 $statsHash = $this->computeStatsHashFromData($data);
 
-                // Exact duplicate anywhere in the database → skip silently.
-                if (Item::where('stats_hash', $statsHash)->exists()) {
+                // Existing item: attach this log file via pivot (no duplicate record).
+                $existing = Item::where('stats_hash', $statsHash)->first();
+                if ($existing) {
+                    $existing->logFiles()->syncWithoutDetaching([
+                        $logFile->id => ['created_at' => now()],
+                    ]);
                     continue;
                 }
 
@@ -122,6 +126,7 @@ class LogScanner
                 foreach ($data['spells'] ?? [] as $s) {
                     $item->spells()->create($s);
                 }
+                $item->logFiles()->attach($logFile->id, ['created_at' => now()]);
                 $itemsNew++;
             }
 

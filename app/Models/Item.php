@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Item extends Model
@@ -64,9 +65,18 @@ class Item extends Model
         return hash('sha256', json_encode($payload));
     }
 
+    /** The log file where this item was first seen. */
     public function logFile(): BelongsTo
     {
         return $this->belongsTo(LogFile::class);
+    }
+
+    /** All log files in which this item has been identified. */
+    public function logFiles(): BelongsToMany
+    {
+        return $this->belongsToMany(LogFile::class)
+            ->withPivot('created_at')
+            ->using(ItemLogFile::class);
     }
 
     public function affects(): HasMany

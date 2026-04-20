@@ -41,7 +41,8 @@ class MudLogController extends Controller
 
     public function show(LogFile $mudlog)
     {
-        $mudlog->load(['items.protections', 'items.affects', 'items.flags']);
+        $mudlog->load(['items' => fn ($q) => $q->orderBy('name'),
+            'items.protections', 'items.affects', 'items.flags', 'items.spells']);
         return view('mudlogs.show', ['file' => $mudlog]);
     }
 
@@ -67,9 +68,22 @@ class MudLogController extends Controller
             return back()->withErrors(['path' => "File no longer exists: {$mudlog->path}"]);
         }
 
-        // Remove this file's items so re-ingest isn't blocked by dedup against itself.
-        $mudlog->items()->delete();
-        $mudlog->update(['scanned_at' => null, 'items_count' => 0]);
+        // Detach this file from all items and delete items that were originally
+        // seen here AND aren't attached to any other log file. Items shared with
+        // other logs are kept; they will simply be re-attached by the ingest job.
+        DB::transaction(function () use ($mudlog) {
+            $mudlog->items()->detach();
+
+            // Delete original items only if they aren't referenced by another log.
+            $orphanIds = Item::where('log_file_id', $mudlog->id)
+                ->whereDoesntHave('logFiles')
+                ->pluck('id');
+            if ($orphanIds->isNotEmpty()) {
+                Item::whereIn('id', $orphanIds)->delete();
+            }
+
+            $mudlog->update(['scanned_at' => null, 'items_count' => 0]);
+        });
 
         IngestLogFile::dispatch($mudlog->path, $mudlog->filename, $mudlog->source ?? 'scan');
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LogFile extends Model
@@ -18,7 +19,20 @@ class LogFile extends Model
         'items_count' => 'integer',
     ];
 
-    public function items(): HasMany
+    /**
+     * All items seen in this log file (many-to-many; same item can appear in many logs).
+     */
+    public function items(): BelongsToMany
+    {
+        return $this->belongsToMany(Item::class)
+            ->withPivot('created_at')
+            ->using(\App\Models\ItemLogFile::class);
+    }
+
+    /**
+     * Items where this LogFile was the original/first source (primary).
+     */
+    public function originalItems(): HasMany
     {
         return $this->hasMany(Item::class);
     }
