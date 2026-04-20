@@ -24,6 +24,21 @@
                     {{ session('status') }}
                 </div>
             @endif
+
+            @php
+                $queued = \Illuminate\Support\Facades\DB::table('jobs')->count();
+                $failed = \Illuminate\Support\Facades\DB::table('failed_jobs')->count();
+            @endphp
+            @if ($queued > 0 || $failed > 0)
+                <div class="p-3 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded flex items-center justify-between" x-data x-init="setTimeout(() => location.reload(), 5000)">
+                    <span>
+                        @if ($queued > 0) <strong>{{ $queued }}</strong> job(s) in queue. @endif
+                        @if ($failed > 0) <strong class="text-red-700">{{ $failed }}</strong> failed. @endif
+                        Run <code class="bg-white px-1 rounded">php artisan queue:work</code> to process.
+                    </span>
+                    <span class="text-xs text-blue-500">auto-refresh 5s</span>
+                </div>
+            @endif
             @if ($errors->any())
                 <div class="p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded">
                     {{ $errors->first() }}

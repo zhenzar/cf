@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\IngestLogFile;
+use App\Jobs\ScanDirectory;
 use App\Models\Item;
 use App\Models\LogFile;
 use App\Services\LogScanner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MudLogController extends Controller
 {
@@ -54,23 +57,21 @@ class MudLogController extends Controller
         return redirect()->route('mudlogs.index')->with('status', 'Log file deleted.');
     }
 
-    public function scan(Request $request, LogScanner $scanner)
+    public function scan(Request $request)
     {
         $data = $request->validate([
             'path' => ['required', 'string'],
         ]);
-        try {
-            $summary = $scanner->scanDirectory($data['path']);
-        } catch (\Throwable $e) {
-            return back()->withErrors(['path' => $e->getMessage()]);
+        if (! is_dir($data['path'])) {
+            return back()->withErrors(['path' => "Not a directory: {$data['path']}"]);
         }
-        return back()->with('status', sprintf(
-            'Scan done. Files seen: %d, new/updated: %d, items ingested: %d',
-            $summary['filesSeen'], $summary['filesNew'], $summary['itemsNew']
-        ));
+
+        ScanDirectory::dispatch($data['path']);
+
+        return back()->with('status', "Scan queued. Items will appear as the worker processes files (run: php artisan queue:work).");
     }
 
-    public function upload(Request $request, LogScanner $scanner)
+    public function upload(Request $request)
     {
         $request->validate([
             'files' => ['required', 'array'],
@@ -83,16 +84,14 @@ class MudLogController extends Controller
         }
 
         $total = 0;
-        $items = 0;
         foreach ($request->file('files') as $file) {
             $dest = $storeDir . DIRECTORY_SEPARATOR . date('YmdHis') . '_' . $file->getClientOriginalName();
             $file->move($storeDir, basename($dest));
-            $res = $scanner->ingestFile($dest, basename($dest), 'upload');
+            IngestLogFile::dispatch($dest, basename($dest), 'upload');
             $total++;
-            $items += $res['items_new'];
         }
 
-        return back()->with('status', "Uploaded {$total} file(s), ingested {$items} item(s).");
+        return back()->with('status', "Queued {$total} file(s) for processing.");
     }
 
     public function items(Request $request)
