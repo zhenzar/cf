@@ -68,11 +68,15 @@ class LogScanner
             ->where('path', '!=', $path)
             ->first();
         if ($existingByHash) {
-            $logFile = LogFile::firstOrNew(['path' => $path]);
+            // Fetch existing record for this path, or create new
+            $logFile = LogFile::where('path', $path)->first();
+            if (! $logFile) {
+                $logFile = new LogFile(['path' => $path]);
+            }
+
             $logFile->filename = $filename;
             $logFile->source = $source;
             $logFile->size = $size;
-            $logFile->content_hash = null; // unique index; only one row owns the hash
             $logFile->scanned_at = now();
             $logFile->save();
 

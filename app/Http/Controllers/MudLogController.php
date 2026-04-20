@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\IngestLogFile;
+use App\Jobs\RescanLogFile;
 use App\Jobs\ScanDirectory;
 use App\Models\Item;
 use App\Models\LogFile;
@@ -134,16 +135,7 @@ class MudLogController extends Controller
                     if (! is_file($mudlog->path)) {
                         continue;
                     }
-                    DB::transaction(function () use ($mudlog) {
-                        $mudlog->items()->detach();
-                        $orphanIds = Item::where('log_file_id', $mudlog->id)
-                            ->whereDoesntHave('logFiles')->pluck('id');
-                        if ($orphanIds->isNotEmpty()) {
-                            Item::whereIn('id', $orphanIds)->delete();
-                        }
-                        $mudlog->update(['scanned_at' => null, 'items_count' => 0]);
-                    });
-                    IngestLogFile::dispatch($mudlog->path, $mudlog->filename, $mudlog->source ?? 'scan');
+                    RescanLogFile::dispatch($mudlog->id);
                     $queued++;
                 }
                 return back()->with('status', "Queued rescan for {$queued} file(s).");
@@ -166,8 +158,7 @@ class MudLogController extends Controller
     }
 
     /**
-     * Re-parse a single log file. Deletes its existing items first, then
-     * queues a fresh ingest so the updated parser rules apply.
+     * Re-parse a single log file. Queues a RescanLogFile job.
      */
     public function rescan(LogFile $mudlog)
     {
@@ -175,26 +166,28 @@ class MudLogController extends Controller
             return back()->withErrors(['path' => "File no longer exists: {$mudlog->path}"]);
         }
 
-        // Detach this file from all items and delete items that were originally
-        // seen here AND aren't attached to any other log file. Items shared with
-        // other logs are kept; they will simply be re-attached by the ingest job.
-        DB::transaction(function () use ($mudlog) {
-            $mudlog->items()->detach();
-
-            // Delete original items only if they aren't referenced by another log.
-            $orphanIds = Item::where('log_file_id', $mudlog->id)
-                ->whereDoesntHave('logFiles')
-                ->pluck('id');
-            if ($orphanIds->isNotEmpty()) {
-                Item::whereIn('id', $orphanIds)->delete();
-            }
-
-            $mudlog->update(['scanned_at' => null, 'items_count' => 0]);
-        });
-
-        IngestLogFile::dispatch($mudlog->path, $mudlog->filename, $mudlog->source ?? 'scan');
+        RescanLogFile::dispatch($mudlog->id);
 
         return back()->with('status', "Rescan queued for {$mudlog->filename}.");
+    }
+
+    /**
+     * Re-parse all existing log files. Queues RescanLogFile jobs (one per file).
+     */
+    public function rescanAll()
+    {
+        $files = LogFile::all();
+        $queued = 0;
+
+        foreach ($files as $mudlog) {
+            if (! is_file($mudlog->path)) {
+                continue;
+            }
+            RescanLogFile::dispatch($mudlog->id);
+            $queued++;
+        }
+
+        return back()->with('status', "Queued rescan for {$queued} file(s).");
     }
 
     public function scan(Request $request)

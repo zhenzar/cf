@@ -26,9 +26,16 @@ class IngestLogFile implements ShouldQueue
     public function handle(LogScanner $scanner): void
     {
         if (! is_file($this->path)) {
+            \Log::warning("IngestLogFile: File not found: {$this->path}");
             return;
         }
-        $scanner->ingestFile($this->path, $this->filename, $this->source, $this->size);
+
+        try {
+            $scanner->ingestFile($this->path, $this->filename, $this->source, $this->size);
+        } catch (\Throwable $e) {
+            \Log::error("IngestLogFile failed for {$this->path}: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     public function uniqueId(): string

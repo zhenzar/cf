@@ -116,17 +116,24 @@
                 </div>
             </div>
 
-            <form method="GET" action="{{ route('mudlogs.index') }}" class="flex flex-wrap gap-2 items-center">
-                <select name="filter" onchange="this.form.submit()"
-                        class="border-gray-300 rounded-md shadow-sm text-sm">
-                    <option value="all" @selected($filter==='all')>All ({{ $counts['all'] }})</option>
-                    <option value="pending" @selected($filter==='pending')>Pending ({{ $counts['pending'] }})</option>
-                    <option value="reviewed" @selected($filter==='reviewed')>Reviewed ({{ $counts['reviewed'] }})</option>
-                </select>
-                <input type="search" name="q" value="{{ $q }}" placeholder="Search filename..."
-                       class="flex-1 min-w-[200px] border-gray-300 rounded-md shadow-sm text-sm">
-                <button class="px-4 py-2 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-700">Search</button>
-            </form>
+            <div class="flex flex-wrap gap-2 items-center">
+                <form method="GET" action="{{ route('mudlogs.index') }}" class="flex flex-wrap gap-2 items-center flex-1">
+                    <select name="filter" onchange="this.form.submit()"
+                            class="border-gray-300 rounded-md shadow-sm text-sm">
+                        <option value="all" @selected($filter==='all')>All ({{ $counts['all'] }})</option>
+                        <option value="pending" @selected($filter==='pending')>Pending ({{ $counts['pending'] }})</option>
+                        <option value="reviewed" @selected($filter==='reviewed')>Reviewed ({{ $counts['reviewed'] }})</option>
+                    </select>
+                    <input type="search" name="q" value="{{ $q }}" placeholder="Search filename..."
+                           class="flex-1 min-w-[200px] border-gray-300 rounded-md shadow-sm text-sm">
+                    <button class="px-4 py-2 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-700">Search</button>
+                </form>
+                <form method="POST" action="{{ route('mudlogs.rescan-all') }}"
+                      onsubmit="return confirm('Rescan ALL files? This will clear items and re-queue everything.');">
+                    @csrf
+                    <button class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700">Rescan All</button>
+                </form>
+            </div>
 
             <form method="POST" action="{{ route('mudlogs.bulk') }}"
                   x-data="{ selected: [], all: false, toggleAll() { this.all = !this.all; this.selected = this.all ? [...document.querySelectorAll('[data-row-id]')].map(el => el.dataset.rowId) : []; } }">
