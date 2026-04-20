@@ -36,6 +36,7 @@ class Item extends Model
             ->sort()->values()->all();
         $flags = $this->flags
             ->map(fn ($f) => strtolower($f->flag))
+            ->reject(fn ($f) => in_array($f, \App\Services\LogScanner::FLAGS_IGNORED_FOR_DEDUP, true))
             ->sort()->values()->all();
 
         $payload = [

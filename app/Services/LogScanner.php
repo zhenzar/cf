@@ -9,6 +9,13 @@ use Symfony\Component\Finder\Finder;
 
 class LogScanner
 {
+    /**
+     * Flags that should be ignored when computing the dedup hash. These
+     * can vary between otherwise-identical item identifications without
+     * meaningfully changing the item (e.g. a blessed/unblessed copy).
+     */
+    public const FLAGS_IGNORED_FOR_DEDUP = ['blessed'];
+
     public function __construct(private ItemParser $parser) {}
 
     /**
@@ -141,6 +148,7 @@ class LogScanner
             ->sort()->values()->all();
         $flags = collect($d['flags'] ?? [])
             ->map(fn ($f) => strtolower($f))
+            ->reject(fn ($f) => in_array($f, self::FLAGS_IGNORED_FOR_DEDUP, true))
             ->sort()->values()->all();
         $spells = collect($d['spells'] ?? [])
             ->map(fn ($s) => strtolower($s['name']) . ':' . ($s['level'] ?? ''))

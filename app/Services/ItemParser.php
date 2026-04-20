@@ -288,10 +288,15 @@ class ItemParser
                 continue;
             }
 
-            // Class / race restriction: "Only an Outlander of Thar'Eris could use it."
-            // Captures the restricted group as a flag, e.g. "Outlander".
+            // Class / race / size restriction: "Only an Outlander of Thar'Eris could use it."
+            //                                   "It is clearly meant for a giant."
+            // Stored as a flag like "outlander only" / "giant only".
             if (preg_match('/^only (?:an?\s+)?([A-Z][A-Za-z\-]+)(?:\s+of\s+[A-Za-z\'\-]+)?\s+could\s+(?:use|wield|wear)\s+it/i', $line, $m)) {
-                $data['flags'][] = strtolower($m[1]);
+                $data['flags'][] = strtolower($m[1]) . ' only';
+                continue;
+            }
+            if (preg_match('/^it is (?:clearly\s+)?(?:meant|made|designed|intended)\s+for\s+(?:an?\s+)?([A-Za-z\-]+)/i', $line, $m)) {
+                $data['flags'][] = strtolower($m[1]) . ' only';
                 continue;
             }
             // "Those with a balanced soul cannot use it." → -N
