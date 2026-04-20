@@ -59,6 +59,60 @@ class MudLogController extends Controller
     }
 
     /**
+     * Bulk actions on a selection of log files (rescan / delete / toggle reviewed).
+     */
+    public function bulk(Request $request)
+    {
+        $data = $request->validate([
+            'action' => ['required', 'in:rescan,delete,mark_reviewed,mark_unreviewed'],
+            'ids'    => ['required', 'array', 'min:1'],
+            'ids.*'  => ['integer'],
+        ]);
+
+        $files = LogFile::whereIn('id', $data['ids'])->get();
+        if ($files->isEmpty()) {
+            return back()->withErrors(['ids' => 'No files selected.']);
+        }
+
+        switch ($data['action']) {
+            case 'rescan':
+                $queued = 0;
+                foreach ($files as $mudlog) {
+                    if (! is_file($mudlog->path)) {
+                        continue;
+                    }
+                    DB::transaction(function () use ($mudlog) {
+                        $mudlog->items()->detach();
+                        $orphanIds = Item::where('log_file_id', $mudlog->id)
+                            ->whereDoesntHave('logFiles')->pluck('id');
+                        if ($orphanIds->isNotEmpty()) {
+                            Item::whereIn('id', $orphanIds)->delete();
+                        }
+                        $mudlog->update(['scanned_at' => null, 'items_count' => 0]);
+                    });
+                    IngestLogFile::dispatch($mudlog->path, $mudlog->filename, $mudlog->source ?? 'scan');
+                    $queued++;
+                }
+                return back()->with('status', "Queued rescan for {$queued} file(s).");
+
+            case 'delete':
+                $count = $files->count();
+                foreach ($files as $f) { $f->delete(); }
+                return back()->with('status', "Deleted {$count} file(s).");
+
+            case 'mark_reviewed':
+                LogFile::whereIn('id', $files->pluck('id'))->update(['reviewed' => true]);
+                return back()->with('status', "Marked {$files->count()} file(s) as reviewed.");
+
+            case 'mark_unreviewed':
+                LogFile::whereIn('id', $files->pluck('id'))->update(['reviewed' => false]);
+                return back()->with('status', "Marked {$files->count()} file(s) as unreviewed.");
+        }
+
+        return back();
+    }
+
+    /**
      * Re-parse a single log file. Deletes its existing items first, then
      * queues a fresh ingest so the updated parser rules apply.
      */

@@ -82,64 +82,86 @@
                 <button class="px-4 py-2 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-700">Search</button>
             </form>
 
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead>
-                        <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <th class="px-4 py-2 w-12">Done</th>
-                            <th class="px-4 py-2">File</th>
-                            <th class="px-4 py-2 w-24">Items</th>
-                            <th class="px-4 py-2 w-28">Source</th>
-                            <th class="px-4 py-2 w-40">Scanned</th>
-                            <th class="px-4 py-2 w-20"></th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        @forelse ($files as $file)
-                            <tr @class(['bg-gray-50 text-gray-400' => $file->reviewed])>
-                                <td class="px-4 py-2">
-                                    <form method="POST" action="{{ route('mudlogs.toggle', $file) }}">
-                                        @csrf
-                                        <input type="checkbox" onchange="this.form.submit()"
-                                               @checked($file->reviewed)
-                                               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                    </form>
-                                </td>
-                                <td class="px-4 py-2">
-                                    <a href="{{ route('mudlogs.show', $file) }}" class="text-indigo-600 hover:text-indigo-900 font-medium">
-                                        {{ $file->filename }}
-                                    </a>
-                                    <div class="text-xs text-gray-500 truncate max-w-xl" title="{{ $file->path }}">
-                                        {{ $file->path }}
-                                    </div>
-                                </td>
-                                <td class="px-4 py-2">{{ $file->items_count }}</td>
-                                <td class="px-4 py-2 text-xs uppercase">{{ $file->source }}</td>
-                                <td class="px-4 py-2 text-xs">
-                                    {{ $file->scanned_at?->diffForHumans() ?? '—' }}
-                                </td>
-                                <td class="px-4 py-2 text-right">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <form method="POST" action="{{ route('mudlogs.rescan', $file) }}">
-                                            @csrf
-                                            <button class="text-xs text-indigo-600 hover:text-indigo-900" title="Delete items and re-parse this file">Rescan</button>
-                                        </form>
-                                        <form method="POST" action="{{ route('mudlogs.destroy', $file) }}"
-                                              onsubmit="return confirm('Delete this log file and its items?')">
-                                            @csrf @method('DELETE')
-                                            <button class="text-xs text-red-600 hover:text-red-800">Delete</button>
-                                        </form>
-                                    </div>
-                                </td>
+            <form method="POST" action="{{ route('mudlogs.bulk') }}"
+                  x-data="{ selected: [], all: false, toggleAll() { this.all = !this.all; this.selected = this.all ? [...document.querySelectorAll('[data-row-id]')].map(el => el.dataset.rowId) : []; } }">
+                @csrf
+                <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+                    <div class="flex items-center gap-2 px-4 py-2 bg-gray-50 border-b border-gray-200 text-sm"
+                         x-show="selected.length > 0" x-cloak>
+                        <span class="text-gray-600"><strong x-text="selected.length"></strong> selected</span>
+                        <span class="text-gray-300">|</span>
+                        <button type="submit" name="action" value="rescan"
+                                class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-xs">Rescan</button>
+                        <button type="submit" name="action" value="mark_reviewed"
+                                class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs">Mark reviewed</button>
+                        <button type="submit" name="action" value="mark_unreviewed"
+                                class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-xs">Mark unreviewed</button>
+                        <button type="submit" name="action" value="delete"
+                                @click.prevent="if (confirm(`Delete ${selected.length} file(s) and their items?`)) $event.target.closest('form').submit()"
+                                class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs ml-auto">Delete</button>
+                    </div>
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <th class="px-4 py-2 w-8">
+                                    <input type="checkbox" @click="toggleAll()" :checked="all"
+                                           class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                </th>
+                                <th class="px-4 py-2 w-12">Done</th>
+                                <th class="px-4 py-2">File</th>
+                                <th class="px-4 py-2 w-24">Items</th>
+                                <th class="px-4 py-2 w-28">Source</th>
+                                <th class="px-4 py-2 w-40">Scanned</th>
+                                <th class="px-4 py-2 w-20"></th>
                             </tr>
-                        @empty
-                            <tr><td colspan="6" class="px-4 py-8 text-center text-gray-500 text-sm">
-                                No log files yet. Scan a directory or upload files above.
-                            </td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse ($files as $file)
+                                <tr data-row-id="{{ $file->id }}" @class(['bg-gray-50 text-gray-400' => $file->reviewed])>
+                                    <td class="px-4 py-2">
+                                        <input type="checkbox" name="ids[]" value="{{ $file->id }}"
+                                               x-model="selected"
+                                               class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        <input type="checkbox"
+                                               @checked($file->reviewed)
+                                               onchange="event.stopPropagation(); fetch('{{ route('mudlogs.toggle', $file) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' } }).then(() => location.reload())"
+                                               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        <a href="{{ route('mudlogs.show', $file) }}" class="text-indigo-600 hover:text-indigo-900 font-medium">
+                                            {{ $file->filename }}
+                                        </a>
+                                        <div class="text-xs text-gray-500 truncate max-w-xl" title="{{ $file->path }}">
+                                            {{ $file->path }}
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-2">{{ $file->items_count }}</td>
+                                    <td class="px-4 py-2 text-xs uppercase">{{ $file->source }}</td>
+                                    <td class="px-4 py-2 text-xs">
+                                        {{ $file->scanned_at?->diffForHumans() ?? '—' }}
+                                    </td>
+                                    <td class="px-4 py-2 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button type="button"
+                                                    @click="if (confirm('Rescan {{ $file->filename }}?')) { const f = document.createElement('form'); f.method='POST'; f.action='{{ route('mudlogs.rescan', $file) }}'; f.innerHTML='@csrf'; document.body.appendChild(f); f.submit(); }"
+                                                    class="text-xs text-indigo-600 hover:text-indigo-900" title="Delete items and re-parse this file">Rescan</button>
+                                            <button type="button"
+                                                    @click="if (confirm('Delete this log file and its items?')) { const f = document.createElement('form'); f.method='POST'; f.action='{{ route('mudlogs.destroy', $file) }}'; f.innerHTML='@csrf @method(\'DELETE\')'; document.body.appendChild(f); f.submit(); }"
+                                                    class="text-xs text-red-600 hover:text-red-800">Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="7" class="px-4 py-8 text-center text-gray-500 text-sm">
+                                    No log files yet. Scan a directory or upload files above.
+                                </td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </form>
 
             <div>{{ $files->links() }}</div>
         </div>
