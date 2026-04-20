@@ -275,9 +275,23 @@ class ItemParser
                 continue;
             }
             // "It is unusable for those of a corrupt/dark soul." → -E
+            // Also: "People of a dark heart cannot use it."
             if (preg_match('/unusable for those of (?:a\s+)?(?:corrupt|dark|evil)\s+soul/i', $line)
-                || preg_match('/(?:corrupt|dark|evil) soul cannot (?:use|wield) it/i', $line)) {
+                || preg_match('/(?:corrupt|dark|evil) soul cannot (?:use|wield) it/i', $line)
+                || preg_match('/people of (?:a\s+)?(?:dark|corrupt|evil)\s+heart cannot (?:use|wield) it/i', $line)) {
                 $data['alignment'] = ($data['alignment'] ?? '') . '-E';
+                continue;
+            }
+            // "People of a pure heart cannot use it." → -G (mirror)
+            if (preg_match('/people of (?:a\s+)?(?:pure|good|light)\s+heart cannot (?:use|wield) it/i', $line)) {
+                $data['alignment'] = ($data['alignment'] ?? '') . '-G';
+                continue;
+            }
+
+            // Class / race restriction: "Only an Outlander of Thar'Eris could use it."
+            // Captures the restricted group as a flag, e.g. "Outlander".
+            if (preg_match('/^only (?:an?\s+)?([A-Z][A-Za-z\-]+)(?:\s+of\s+[A-Za-z\'\-]+)?\s+could\s+(?:use|wield|wear)\s+it/i', $line, $m)) {
+                $data['flags'][] = strtolower($m[1]);
                 continue;
             }
             // "Those with a balanced soul cannot use it." → -N
