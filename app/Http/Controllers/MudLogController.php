@@ -196,12 +196,18 @@ class MudLogController extends Controller
         // Preferred weapon-class order.
         $weaponOrder = ['Axe', 'Sword', 'Mace', 'Whip', 'Flail', 'Dagger', 'Spear', 'Polearm', 'Staff', 'Club', 'Hammer', 'Bow', 'Crossbow'];
 
+        // Item types that should get their own top-level group (not tied to slot/weapon_class).
+        $typeGroups = ['Shield', 'Potion', 'Scroll', 'Wand', 'Lockpicks'];
+
         $groups = [];
         foreach ($slotOrder as $s) {
             $groups[$slotLabels[$s] ?? $s] = collect();
         }
         foreach ($weaponOrder as $wc) {
             $groups[$wc] = collect();
+        }
+        foreach ($typeGroups as $t) {
+            $groups[$t] = collect();
         }
 
         $otherNonWeapon = collect();
@@ -215,6 +221,12 @@ class MudLogController extends Controller
                 } else {
                     $otherWeapon->push($item);
                 }
+                continue;
+            }
+            // Group by item_type for non-slot items (shields, potions, scrolls, ...).
+            $type = $item->item_type ? ucfirst(strtolower($item->item_type)) : null;
+            if ($type && in_array($type, $typeGroups, true)) {
+                $groups[$type]->push($item);
                 continue;
             }
             $slot = $item->slot;
