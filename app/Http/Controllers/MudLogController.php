@@ -349,6 +349,32 @@ class MudLogController extends Controller
     }
 
     /**
+     * Show edit form for an item.
+     */
+    public function editItem(Item $item)
+    {
+        $slots = ['Finger', 'Neck', 'Body', 'Head', 'Face', 'Legs', 'Feet', 'Hands', 'Arms', 'Waist', 'Wrist', 'Shield', 'Hold', 'Wield'];
+        $areas = Area::orderBy('name')->pluck('name', 'id');
+        return view('mudlogs.items-edit', compact('item', 'slots', 'areas'));
+    }
+
+    /**
+     * Update an item's editable fields.
+     */
+    public function updateItem(Request $request, Item $item)
+    {
+        $data = $request->validate([
+            'slot_override' => 'nullable|string|max:50',
+            'note' => 'nullable|string|max:5000',
+            'area_id' => 'nullable|exists:areas,id',
+        ]);
+
+        $item->update($data);
+
+        return redirect()->route('mudlogs.items')->with('status', "Item '{$item->name}' updated.");
+    }
+
+    /**
      * Clear all items from database and reset log file counts.
      */
     public function clearDatabase()

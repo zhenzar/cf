@@ -29,6 +29,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('mudlogs', [MudLogController::class, 'index'])->name('mudlogs.index');
     Route::get('mudlogs/items', [MudLogController::class, 'items'])->name('mudlogs.items');
+    Route::get('mudlogs/items/{item}/edit', [MudLogController::class, 'editItem'])->name('mudlogs.items.edit');
+    Route::post('mudlogs/items/{item}', [MudLogController::class, 'updateItem'])->name('mudlogs.items.update');
     Route::get('mudlogs/pending', [MudLogController::class, 'pending'])->name('mudlogs.pending');
     Route::post('mudlogs/pending/{item}/confirm', [MudLogController::class, 'confirmPending'])->name('mudlogs.pending.confirm');
     Route::post('mudlogs/pending/{item}/ignore', [MudLogController::class, 'ignorePending'])->name('mudlogs.pending.ignore');

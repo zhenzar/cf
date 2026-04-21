@@ -151,6 +151,7 @@ class CharacterController extends Controller
             'out-of-range' => $all->filter(fn ($a) => ! $a->in_range && ! $a->completed),
             'completed' => $all->filter(fn ($a) => $a->completed),
             'all' => $all,
+            'not-completed' => $all->filter(fn ($a) => ! $a->completed),
         };
 
         $areas = $areas

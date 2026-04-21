@@ -92,7 +92,9 @@
                                     @endphp
                                     <tr data-item data-search="{{ $searchBlob }} {{ strtolower($item->spells->map(fn ($s) => $s->name)->implode(' ')) }}" x-show="matches($el)" x-cloak>
                                         <td class="px-3 py-2 font-medium text-gray-900">
-                                            {{ $item->name }}
+                                            <a href="{{ route('mudlogs.items.edit', $item) }}" class="hover:text-indigo-600 hover:underline">
+                                                {{ $item->name }}
+                                            </a>
                                             @if ($item->keyword)
                                                 <div class="text-xs text-gray-400">{{ $item->keyword }}</div>
                                             @endif
@@ -103,6 +105,16 @@
                                                             {{ $s->name }}@if ($s->level) <span class="text-purple-400">(Lv {{ $s->level }})</span>@endif
                                                         </span>
                                                     @endforeach
+                                                </div>
+                                            @endif
+                                            @if ($item->area)
+                                                <div class="mt-1 text-[10px] text-emerald-600" title="Area: {{ $item->area->name }}">
+                                                    {{ $item->area->name }}
+                                                </div>
+                                            @endif
+                                            @if ($item->note)
+                                                <div class="mt-1 text-[10px] text-blue-600 cursor-help" title="Note: {{ $item->note }}">
+                                                    📝 {{ Str::limit($item->note, 30) }}
                                                 </div>
                                             @endif
                                             @if ($item->logFile)
