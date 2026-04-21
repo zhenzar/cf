@@ -233,10 +233,10 @@ class MudLogController extends Controller
     {
         $all = Item::query()
             ->where('status', 'confirmed')
-            ->select('id', 'log_file_id', 'name', 'keyword', 'level', 'item_type', 'slot', 'material',
+            ->select('id', 'log_file_id', 'name', 'keyword', 'level', 'item_type', 'slot', 'slot_override', 'material',
                      'weapon_class', 'weapon_qualifier', 'damage_type', 'attack_type', 'damage_dice',
-                     'av_damage', 'worth_copper', 'weight_pounds', 'weight_ounces', 'alignment', 'status')
-            ->with(['logFile:id,filename', 'protections', 'affects', 'flags', 'spells'])
+                     'av_damage', 'worth_copper', 'weight_pounds', 'weight_ounces', 'alignment', 'status', 'area_id')
+            ->with(['logFile:id,filename', 'protections', 'affects', 'flags', 'spells', 'area'])
             ->orderBy('level')->orderBy('name')
             ->get();
 
@@ -251,7 +251,7 @@ class MudLogController extends Controller
         $weaponOrder = ['Axe', 'Sword', 'Mace', 'Whip', 'Flail', 'Dagger', 'Spear', 'Polearm', 'Staff', 'Club', 'Hammer', 'Bow', 'Crossbow'];
 
         // Item types that should get their own top-level group (not tied to slot/weapon_class).
-        $typeGroups = ['Shield', 'Potion', 'Scroll', 'Wand', 'Talisman', 'Lockpicks', 'Food', 'Treasure', 'Miscellaneous', 'Drink Container', 'Key', 'Container', 'Instrument', 'Light', 'Ingredient', 'Artifact'];
+        $typeGroups = ['Shield', 'Potion', 'Scroll', 'Wand', 'Talisman', 'Lockpicks', 'Food', 'Treasure', 'Miscellaneous', 'Drink Container', 'Key', 'Container', 'Instrument', 'Light', 'Ingredient', 'Artifact', 'Pill', 'Boat'];
 
         $groups = [];
         foreach ($slotOrder as $s) {

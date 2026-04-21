@@ -11,9 +11,10 @@ class Item extends Model
 {
     protected $fillable = [
         'log_file_id', 'name', 'keyword', 'worth_copper', 'level',
-        'item_type', 'slot', 'material', 'weight_pounds', 'weight_ounces',
+        'item_type', 'slot', 'slot_override', 'material', 'weight_pounds', 'weight_ounces',
         'weapon_class', 'weapon_qualifier', 'damage_type', 'attack_type',
         'damage_dice', 'av_damage', 'alignment', 'raw_text', 'hash', 'stats_hash', 'status',
+        'note', 'area_id',
     ];
 
     /**
@@ -97,5 +98,18 @@ class Item extends Model
     public function spells(): HasMany
     {
         return $this->hasMany(ItemSpell::class);
+    }
+
+    public function area(): BelongsTo
+    {
+        return $this->belongsTo(Area::class);
+    }
+
+    /**
+     * Get effective slot (override takes precedence over parsed slot).
+     */
+    public function effectiveSlot(): ?string
+    {
+        return $this->slot_override ?? $this->slot;
     }
 }

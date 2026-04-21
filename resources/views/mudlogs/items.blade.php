@@ -70,6 +70,7 @@
                                     <th class="px-3 py-2">Name</th>
                                     <th class="px-3 py-2">Lvl</th>
                                     <th class="px-3 py-2">Material</th>
+                                    <th class="px-3 py-2">Weight</th>
                                     <th class="px-3 py-2">Align</th>
                                     <th class="px-3 py-2 cursor-help" title="Piercing, Bashing, Slashing, Magic, Element">Armor</th>
                                     <th class="px-3 py-2">Affects</th>
@@ -115,6 +116,11 @@
                                         </td>
                                         <td class="px-3 py-2 text-gray-600">{{ $item->level }}</td>
                                         <td class="px-3 py-2 text-gray-600">{{ $item->material }}</td>
+                                        <td class="px-3 py-2 text-gray-600">
+                                            @if ($item->weight_pounds || $item->weight_ounces)
+                                                {{ $item->weight_pounds ? $item->weight_pounds.' lb' : '' }}{{ $item->weight_ounces ? ' '.$item->weight_ounces.' oz' : '' }}
+                                            @endif
+                                        </td>
                                         <td class="px-3 py-2">
                                             @if ($item->alignment)
                                                 <span class="text-xs px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-mono">{{ $item->alignment }}</span>
