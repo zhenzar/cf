@@ -164,4 +164,39 @@
 |   All   | Thror             - A Wagon-Marked Road #http://wiki.qhcf.net/index.php?title=A_Wagon-Marked_Road
 |   All   | Pico/Iukuru/Ysaloerye - The Ancient Road to the Wastes
 |   All   | Andaren/Kastellyn - The Eastern Road #http://wiki.qhcf.net/index.php?title=EasternRoad
-|   All   | Gareth/Ashaxreyn  - A Virgin Forest #http://wiki.qhcf.net/index.php?title=A_Virgin_Forest
+|   All   | Gareth/Ashaxreyn  - A Virgin Forest #http://wiki.qhcf.net/index.php?title=A_Virgin_Forest                                                    
+| 47 - 51 | Ishuli            - The Consanguine Cult
+| 45 - 51 | Ishuli/Azorinne   - The Pumpkin Patch
+| 45 - 51 | Ishuli            - The Ancient Water Temple
+|  R.I.P. | Rahsael           - Excavated Ruins
+| 28 - 35 | Anliltuel         - Prison of Glymarach
+| 41 - 51 | Rayihn/Daevryn    - Tiamat's Lair
+| 41 - 51 | Rayihn/Daevryn    - The Black Lair
+| 41 - 51 | Rayihn/Daevryn    - The Blue Lair
+| 41 - 51 | Rayihn/Daevryn    - The Green Lair
+| 41 - 51 | Rayihn/Daevryn    - The White Lair
+| 45 - 51 | Yean              - Dragon Tower Ruins
+| 41 - 51 | Rayihn/Daevryn    - The Red Lair
+| 45 - 51 | Gherian           - Yzekon
+| 45 - 51 | Jaldean           - Aran'gird
+| 45 - 51 | Jaldean           - Underdark Mines
+| 40 - 51 | Scarabaeus        - The Ghoul Tunnels
+| 40 - 51 | Ashaxreyn         - Nizarrsh Datul
+| 30 - 51 | Nazmorghul/Rahsael - Organia, the Veil of Shadow
+| 40 - 51 | Guerric           - Thar-Acacia
+| 51 - 51 | Balgrimnr         - Duel Grounds
+| 40 - 51 | Iukuru            - Octagonal Tower
+| 45 - 51 | Scarabaeus        - Plane of Shadow
+| 41 - 50 | Scarabaeus        - 1st Circle of Hell
+| 45 - 50 | Scarabaeus        - 2nd Circle of Hell
+|  R.I.P. | Scarabaeus        - 3rd Circle of Hell
+|  R.I.P. | Scarabaeus        - 4th Circle of Hell
+|  R.I.P. | Scarabaeus        - 5th Circle of Hell
+|  R.I.P. | Scarabaeus        - 6th Circle of Hell
+|  R.I.P. | Scarabaeus        - 7th Circle of Hell
+|  R.I.P. | Scarabaeus        - 8th Circle of Hell
+|  R.I.P. | Scarabaeus        - 9th Circle of Hell
+| 30 - 51 | ShaidarH          - Lost Elven Vaults
+| 40 - 51 | Nepenthe          - Nyathl Ikalith
+| 40 - 51 | Nepenthe          - Ayerthl Zelaath
+| 40 - 51 | Andaren           - The Tower of Trothon

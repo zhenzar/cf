@@ -14,7 +14,7 @@ class LogScanner
      * can vary between otherwise-identical item identifications without
      * meaningfully changing the item (e.g. a blessed/unblessed copy).
      */
-    public const FLAGS_IGNORED_FOR_DEDUP = ['blessed'];
+    public const FLAGS_IGNORED_FOR_DEDUP = ['blessed', 'magical'];
 
     public function __construct(private ItemParser $parser) {}
 
@@ -114,6 +114,13 @@ class LogScanner
                         $logFile->id => ['created_at' => now()],
                     ]);
                     continue;
+                }
+
+                // Skip Foresight items if one already exists (keep first, ignore subsequent).
+                if (stripos($data['name'], 'Foresight') !== false) {
+                    if (Item::where('name', $data['name'])->exists()) {
+                        continue;
+                    }
                 }
 
                 // Name already exists but stats differ → queue for review.
