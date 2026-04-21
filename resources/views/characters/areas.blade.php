@@ -21,6 +21,7 @@
                     'in-range' => 'In range',
                     'out-of-range' => 'Out of range',
                     'completed' => 'Completed',
+                    'not-completed' => 'Not completed',
                     'all' => 'All',
                 ];
             @endphp

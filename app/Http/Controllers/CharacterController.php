@@ -143,6 +143,7 @@ class CharacterController extends Controller
             'in-range' => $all->where('in_range', true)->where('completed', false)->count(),
             'out-of-range' => $all->where('in_range', false)->where('completed', false)->count(),
             'completed' => $all->where('completed', true)->count(),
+            'not-completed' => $all->where('completed', false)->count(),
             'all' => $all->count(),
         ];
 
