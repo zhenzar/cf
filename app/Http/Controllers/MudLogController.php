@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\IngestLogFile;
 use App\Jobs\RescanLogFile;
 use App\Jobs\ScanDirectory;
+use App\Models\Area;
 use App\Models\Item;
 use App\Models\LogFile;
 use App\Services\LogScanner;
@@ -368,6 +369,11 @@ class MudLogController extends Controller
             'note' => 'nullable|string|max:5000',
             'area_id' => 'nullable|exists:areas,id',
         ]);
+
+        // Only allow slot_override for treasure items
+        if ($item->item_type !== 'Treasure') {
+            unset($data['slot_override']);
+        }
 
         $item->update($data);
 

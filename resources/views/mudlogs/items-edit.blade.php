@@ -32,16 +32,18 @@
                         <h3 class="text-sm font-semibold text-gray-900 mb-4">Override Settings</h3>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="slot_override" class="block text-sm font-medium text-gray-700 mb-1">Slot Override</label>
-                                <select name="slot_override" id="slot_override" class="w-full border-gray-300 rounded-md shadow-sm">
-                                    <option value="">— No override —</option>
-                                    @foreach ($slots as $slot)
-                                        <option value="{{ $slot }}" @selected($item->slot_override === $slot)>{{ $slot }}</option>
-                                    @endforeach
-                                </select>
-                                <p class="text-xs text-gray-500 mt-1">Force item to appear in this slot group</p>
-                            </div>
+                            @if ($item->item_type === 'Treasure')
+                                <div>
+                                    <label for="slot_override" class="block text-sm font-medium text-gray-700 mb-1">Slot Override</label>
+                                    <select name="slot_override" id="slot_override" class="w-full border-gray-300 rounded-md shadow-sm">
+                                        <option value="">— No override —</option>
+                                        @foreach ($slots as $slot)
+                                            <option value="{{ $slot }}" @selected($item->slot_override === $slot)>{{ $slot }}</option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-xs text-gray-500 mt-1">Force treasure item to appear in this slot group</p>
+                                </div>
+                            @endif
 
                             <div>
                                 <label for="area_id" class="block text-sm font-medium text-gray-700 mb-1">Area</label>
