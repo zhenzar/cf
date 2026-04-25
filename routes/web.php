@@ -9,6 +9,25 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Queue worker endpoint for cron jobs (URL-based triggering)
+Route::get('/cron/worker/{token}', function ($token) {
+    if ($token !== env('CRON_SECRET_TOKEN')) {
+        abort(403);
+    }
+
+    // Process jobs from queue (without needing php artisan queue:work)
+    \Illuminate\Support\Facades\Artisan::call('queue:work', [
+        '--stop-when-empty' => true,
+        '--tries' => 3,
+        '--timeout' => 60,
+    ]);
+
+    return response()->json([
+        'processed' => true,
+        'output' => \Illuminate\Support\Facades\Artisan::output(),
+    ]);
+})->name('cron.worker');
+
 Route::get('/dashboard', [CharacterController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
