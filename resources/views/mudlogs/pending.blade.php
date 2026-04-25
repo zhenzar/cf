@@ -66,7 +66,11 @@
                                 <div class="border-t first:border-0 py-2">
                                     @include('mudlogs._item_summary', ['item' => $match])
                                     <div class="text-xs text-gray-400 mt-1">
-                                        From <a href="{{ route('mudlogs.show', $match->log_file_id) }}" class="text-indigo-600 hover:text-indigo-900">{{ $match->logFile->filename }}</a>
+                                        @if ($match->log_file_id)
+                                            From <a href="{{ route('mudlogs.show', $match->log_file_id) }}" class="text-indigo-600 hover:text-indigo-900">{{ $match->logFile->filename ?? 'Unknown' }}</a>
+                                        @else
+                                            <span class="text-gray-400">No source log</span>
+                                        @endif
                                     </div>
                                 </div>
                             @empty

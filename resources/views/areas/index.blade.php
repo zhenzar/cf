@@ -4,8 +4,13 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Areas <span class="text-sm text-gray-500 font-normal">({{ $areas->count() }})</span>
             </h2>
-            <div class="text-xs text-gray-500">
-                No character selected &mdash; select one in the sidebar to track progress.
+            <div class="flex items-center gap-3">
+                <a href="{{ route('areas.create') }}" class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700">
+                    + New Area
+                </a>
+                <div class="text-xs text-gray-500">
+                    No character selected &mdash; select one in the sidebar to track progress.
+                </div>
             </div>
         </div>
     </x-slot>
@@ -28,6 +33,7 @@
                             <th class="px-4 py-2 w-24">Level</th>
                             <th class="px-4 py-2 w-40">Realm</th>
                             <th class="px-4 py-2">Area</th>
+                            <th class="px-4 py-2 w-20"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -42,8 +48,8 @@
                                 </td>
                                 <td class="px-4 py-2 text-gray-600">{{ $area->realm }}</td>
                                 <td class="px-4 py-2 font-medium">
-                                    @if ($area->url)
-                                        <a href="{{ $area->url }}" target="_blank" rel="noopener"
+                                    @if ($area->wiki_content || $area->url)
+                                        <a href="{{ route('areas.wiki', $area) }}"
                                            class="text-indigo-600 hover:text-indigo-900 hover:underline">
                                             {{ $area->name }}
                                         </a>
@@ -51,9 +57,17 @@
                                         {{ $area->name }}
                                     @endif
                                 </td>
+                                <td class="px-4 py-2">
+                                    @if ($area->area_explored)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800" title="Area Explorer">
+                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                            Explorer
+                                        </span>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
-                            <tr><td colspan="3" class="px-4 py-8 text-center text-gray-500">No areas found.</td></tr>
+                            <tr><td colspan="4" class="px-4 py-8 text-center text-gray-500">No areas found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

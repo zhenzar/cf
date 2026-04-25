@@ -13,6 +13,8 @@ class ItemParser
         $lines = preg_split('/\r?\n/', $content);
         // Strip leading timestamp like "14:14:57.865 " from each line.
         $stripped = array_map(fn ($l) => preg_replace('/^\d{2}:\d{2}:\d{2}\.\d{3}\s?/', '', $l), $lines);
+        // Strip MUD prompt prefix (e.g., "civilized <1284hp 810m 747mv 24350tnl (-26.49%) 3 PM> ")
+        $stripped = array_map(fn ($l) => preg_replace('/^\S+\s+<[^>]+>\s*/', '', $l), $stripped);
 
         $results = [];
         $n = count($stripped);
@@ -106,10 +108,20 @@ class ItemParser
         foreach ($merged as $line) {
             $line = trim($line);
 
-            // Name + keyword: "a X can be referred to as 'keyword'."
-            if (preg_match("/^(?:a|an|the|some)\s+(.+?)\s+can be referred to as '([^']+)'/i", $line, $m)) {
+            // Name + keyword: "a X can be referred to as 'keyword'." or "X can be referred to as"
+            if (preg_match("/^(?:(?:a|an|the|some)\s+)?(.+?)\s+can be referred to as '([^']+)'/i", $line, $m)) {
                 $data['name'] = trim($m[1]);
                 $data['keyword'] = trim($m[2]);
+                continue;
+            }
+            // Name only (keyword on next line): "X can be referred to as"
+            if (preg_match("/^(?:(?:a|an|the|some)\s+)?(.+?)\s+can be referred to as\s*$/i", $line, $m)) {
+                $data['name'] = trim($m[1]);
+                continue;
+            }
+            // Keyword continuation line: "  'keyword words'."
+            if ($data['name'] && preg_match("/^'([^']+)'\./", $line, $m)) {
+                $data['keyword'] = trim($m[1]);
                 continue;
             }
 
@@ -172,8 +184,8 @@ class ItemParser
                 continue;
             }
 
-            // Item type + slot: "It is armor worn about the body." / "It is a weapon..."
-            if (preg_match('/^It is (armor|clothing|an instrument|a treasure|a weapon|a shield)\b(.*)$/i', $line, $m)) {
+            // Item type + slot: "It is armor worn about the body." / "It is a weapon..." / "It is a boat..."
+            if (preg_match('/^It is (armor|clothing|an instrument|a treasure|a weapon|a shield|a boat)\b(.*)$/i', $line, $m)) {
                 $type = strtolower($m[1]);
                 $type = preg_replace('/^(a|an)\s+/', '', $type);
                 $data['item_type'] = ucfirst($type);
@@ -211,11 +223,12 @@ class ItemParser
             }
 
             // Weapon line w/ attack type: "It is a two-handed axe with an attack type of crush."
+            // Also handles "It is an exotic weapon with an attack type of digestion." or "infernal power"
             // Qualifier is optional.
-            if (preg_match('/^it is an?\s+(?:(two-handed|one-handed|dual-wielded)\s+)?([a-z]+)\s+with an attack type of\s+(\w+)/i', $line, $m)) {
+            if (preg_match('/^it is an?\s+(?:(two-handed|one-handed|dual-wielded)\s+)?([a-z]+)(?:\s+weapon)?\s+with an attack type of\s+(.+?)$/i', $line, $m)) {
                 if (!empty($m[1])) $data['weapon_qualifier'] = strtolower($m[1]);
                 $data['weapon_class'] = ucfirst(strtolower($m[2]));
-                $data['attack_type'] = strtolower($m[3]);
+                $data['attack_type'] = strtolower(trim($m[3]));
                 $data['item_type'] = $data['item_type'] ?? 'Weapon';
                 $data['slot'] = $data['slot'] ?? 'Wield';
                 continue;

@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Area extends Model
 {
-    protected $fillable = ['name', 'realm', 'min_level', 'max_level', 'url'];
+    protected $fillable = ['name', 'realm', 'min_level', 'max_level', 'url', 'area_explored'];
 
     protected $casts = [
         'min_level' => 'integer',
         'max_level' => 'integer',
+        'area_explored' => 'boolean',
     ];
 
     public function characters()

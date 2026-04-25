@@ -192,6 +192,20 @@ class CharacterController extends Controller
         return back();
     }
 
+    public function updateLevel(Request $request, Character $character)
+    {
+        abort_unless($character->user_id === Auth::id(), 403);
+
+        $validated = $request->validate([
+            'level' => ['required', 'integer', 'min:1', 'max:51'],
+        ]);
+
+        $character->level = $validated['level'];
+        $character->save();
+
+        return back()->with('status', 'Level updated.');
+    }
+
     public function destroy(Character $character)
     {
         abort_unless($character->user_id === Auth::id(), 403);
@@ -212,12 +226,16 @@ class CharacterController extends Controller
     public function setActive(Request $request)
     {
         $id = (int) $request->input('character_id', 0);
+        $user = Auth::user();
         if ($id === 0) {
             session()->forget('active_character_id');
+            $user->last_character_id = null;
         } else {
-            $character = Character::where('user_id', Auth::id())->findOrFail($id);
+            $character = Character::where('user_id', $user->id)->findOrFail($id);
             session(['active_character_id' => $character->id]);
+            $user->last_character_id = $character->id;
         }
+        $user->save();
         return back();
     }
 
@@ -244,5 +262,68 @@ class CharacterController extends Controller
         $areas = $query->get();
 
         return view('areas.index', compact('areas', 'q'));
+    }
+
+    /**
+     * Show locally hosted wiki content for an area.
+     */
+    public function wiki(Area $area)
+    {
+        if (! $area->wiki_content) {
+            if ($area->url) {
+                return redirect()->away($area->url);
+            }
+            abort(404, 'No wiki content available for this area.');
+        }
+
+        return view('areas.wiki', compact('area'));
+    }
+
+    /**
+     * Trigger a wiki rescrape.
+     */
+    public function rescrapeWiki()
+    {
+        $exitCode = 0;
+        $output = [];
+
+        $artisanPath = base_path('artisan');
+        exec("php {$artisanPath} app:scrape-wiki 2>&1", $output, $exitCode);
+
+        $outputText = implode("\n", $output);
+
+        if ($exitCode === 0) {
+            return back()->with('status', "Wiki rescrape completed successfully.\n{$outputText}");
+        }
+
+        return back()->with('error', "Wiki rescrape failed.\n{$outputText}");
+    }
+
+    /**
+     * Show form for creating a new area.
+     */
+    public function createArea()
+    {
+        return view('areas.create');
+    }
+
+    /**
+     * Store a new area.
+     */
+    public function storeArea(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'realm' => ['required', 'string', 'max:255'],
+            'min_level' => ['required', 'integer', 'min:1', 'max:51'],
+            'max_level' => ['required', 'integer', 'min:1', 'max:51'],
+            'area_explored' => ['boolean'],
+        ]);
+
+        $validated['area_explored'] = $request->boolean('area_explored', false);
+
+        Area::create($validated);
+
+        return redirect()->route('areas.index')->with('status', 'Area created successfully.');
     }
 }

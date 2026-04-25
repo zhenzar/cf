@@ -1,12 +1,27 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Areas &mdash; {{ $character->name }} <span class="text-gray-400 font-normal">(Level {{ $character->level }})</span>
-            </h2>
-            <a href="{{ route('characters.show', $character) }}" class="text-sm text-gray-600 hover:text-gray-900">
-                &larr; Back to character
-            </a>
+            <div class="flex items-center gap-4">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    Areas &mdash; {{ $character->name }}
+                </h2>
+                <form method="POST" action="{{ route('characters.update-level', $character) }}" class="flex items-center gap-2">
+                    @csrf
+                    @method('PATCH')
+                    <label class="text-sm text-gray-600">Level</label>
+                    <input type="number" name="level" value="{{ $character->level }}" min="1" max="51"
+                           class="w-16 px-2 py-1 text-sm border-gray-300 rounded-md shadow-sm">
+                    <button type="submit" class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">Save</button>
+                </form>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('areas.create') }}" class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700">
+                    + New Area
+                </a>
+                <a href="{{ route('characters.show', $character) }}" class="text-sm text-gray-600 hover:text-gray-900">
+                    &larr; Back to character
+                </a>
+            </div>
         </div>
     </x-slot>
 
@@ -86,8 +101,8 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-2 font-medium">
-                                    @if ($area->url)
-                                        <a href="{{ $area->url }}" target="_blank" rel="noopener"
+                                    @if ($area->wiki_content || $area->url)
+                                        <a href="{{ route('areas.wiki', $area) }}"
                                            class="text-indigo-600 hover:text-indigo-900 hover:underline">
                                             {{ $area->name }}
                                         </a>

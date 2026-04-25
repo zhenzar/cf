@@ -10,7 +10,7 @@ class LogFile extends Model
 {
     protected $fillable = [
         'path', 'filename', 'source', 'size', 'content_hash', 'content',
-        'reviewed', 'items_count', 'scanned_at',
+        'reviewed', 'items_count', 'scanned_at', 'user_id',
     ];
 
     protected $casts = [

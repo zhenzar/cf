@@ -28,6 +28,15 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Auto-select last used character if available
+        $user = Auth::user();
+        if ($user->last_character_id) {
+            $character = \App\Models\Character::where('user_id', $user->id)->find($user->last_character_id);
+            if ($character) {
+                session(['active_character_id' => $character->id]);
+            }
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

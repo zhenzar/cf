@@ -41,6 +41,14 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        <form method="POST" action="{{ route('wiki.rescrape') }}">
+                            @csrf
+                            <x-dropdown-link :href="route('wiki.rescrape')"
+                                    onclick="event.preventDefault(); this.closest('form').submit();">
+                                {{ __('Rescrape Wiki') }}
+                            </x-dropdown-link>
+                        </form>
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -89,6 +97,14 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+
+                <form method="POST" action="{{ route('wiki.rescrape') }}">
+                    @csrf
+                    <x-responsive-nav-link :href="route('wiki.rescrape')"
+                            onclick="event.preventDefault(); this.closest('form').submit();">
+                        {{ __('Rescrape Wiki') }}
+                    </x-responsive-nav-link>
+                </form>
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">

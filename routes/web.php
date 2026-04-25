@@ -14,6 +14,9 @@ Route::get('/dashboard', [CharacterController::class, 'index'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/areas/{area}/wiki', [CharacterController::class, 'wiki'])->name('areas.wiki');
+    Route::post('/wiki/rescrape', [CharacterController::class, 'rescrapeWiki'])->name('wiki.rescrape');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -23,9 +26,12 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('characters', CharacterController::class)
         ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
+    Route::patch('characters/{character}/level', [CharacterController::class, 'updateLevel'])->name('characters.update-level');
 
     Route::post('active-character', [CharacterController::class, 'setActive'])->name('active-character.set');
     Route::get('areas', [CharacterController::class, 'areasIndex'])->name('areas.index');
+    Route::get('areas/create', [CharacterController::class, 'createArea'])->name('areas.create');
+    Route::post('areas', [CharacterController::class, 'storeArea'])->name('areas.store');
 
     Route::get('mudlogs', [MudLogController::class, 'index'])->name('mudlogs.index');
     Route::get('mudlogs/items', [MudLogController::class, 'items'])->name('mudlogs.items');

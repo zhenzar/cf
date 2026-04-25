@@ -16,10 +16,18 @@ class MudLogController extends Controller
 {
     public function index(Request $request)
     {
+        $user = Auth::user();
+        $isZhenzar = $user->email === 'zhenzar@gmail.com';
+
         $q = trim((string) $request->query('q', ''));
         $filter = $request->query('filter', 'all'); // all | reviewed | pending
 
         $query = LogFile::query()->withCount('items')->orderByDesc('created_at');
+
+        // Non-zhenzar users only see their own files
+        if (! $isZhenzar) {
+            $query->where('user_id', $user->id);
+        }
 
         if ($q !== '') {
             $query->where('filename', 'like', "%{$q}%");
@@ -214,45 +222,118 @@ class MudLogController extends Controller
             'files.*' => ['file', 'mimes:txt', 'max:10240'], // .txt only, max 10MB each
         ]);
 
-        $storeDir = storage_path('app/mudlogs/uploads');
+        $user = Auth::user();
+        $isZhenzar = $user->email === 'zhenzar@gmail.com';
+
+        // Use user-specific directory for non-zhenzar users
+        if ($isZhenzar) {
+            $storeDir = storage_path('app/mudlogs/uploads');
+        } else {
+            $storeDir = storage_path('app/mudlogs/users/' . $user->id);
+        }
+
         if (! is_dir($storeDir)) {
             @mkdir($storeDir, 0775, true);
         }
 
-        $total = 0;
+        $processed = 0;
+        $skipped = 0;
+
         foreach ($request->file('files') as $file) {
+            $content = file_get_contents($file->getPathname());
+            $contentHash = hash('sha256', $content);
+
+            // Check if this exact content already exists for this user
+            $existing = LogFile::where('content_hash', $contentHash)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if ($existing) {
+                $skipped++;
+                continue; // Silently skip duplicate
+            }
+
             $dest = $storeDir . DIRECTORY_SEPARATOR . date('YmdHis') . '_' . $file->getClientOriginalName();
             $file->move($storeDir, basename($dest));
-            IngestLogFile::dispatch($dest, basename($dest), 'upload');
-            $total++;
+            IngestLogFile::dispatch($dest, basename($dest), 'upload', null, $user->id);
+            $processed++;
         }
 
-        return back()->with('status', "Queued {$total} file(s) for processing.");
+        // Only show status if files were actually processed
+        if ($processed > 0) {
+            return back()->with('status', "Processed {$processed} file(s).");
+        }
+
+        // Silently return for skipped duplicates
+        return back();
     }
 
     public function items(Request $request)
     {
-        $all = Item::query()
+        // Build query with filters
+        $query = Item::query()
             ->where('status', 'confirmed')
             ->select('id', 'log_file_id', 'name', 'keyword', 'level', 'item_type', 'slot', 'slot_override', 'material',
                      'weapon_class', 'weapon_qualifier', 'damage_type', 'attack_type', 'damage_dice',
                      'av_damage', 'worth_copper', 'weight_pounds', 'weight_ounces', 'alignment', 'status', 'area_id')
-            ->with(['logFile:id,filename', 'protections', 'affects', 'flags', 'spells', 'area'])
-            ->orderBy('level')->orderBy('name')
-            ->get();
+            ->with(['logFile:id,filename', 'protections', 'affects', 'flags', 'spells', 'area']);
+        
+        // Apply type filter
+        if ($request->filled('type')) {
+            $query->where('item_type', $request->input('type'));
+        }
+        
+        // Apply material filter
+        if ($request->filled('material')) {
+            $query->where('material', $request->input('material'));
+        }
+        
+        // Apply flag filter
+        if ($request->filled('flag')) {
+            $flag = $request->input('flag');
+            $query->whereHas('flags', function ($q) use ($flag) {
+                $q->where('flag', $flag);
+            });
+        }
+        
+        // Apply attack_type filter
+        if ($request->filled('attack_type')) {
+            $query->where('attack_type', $request->input('attack_type'));
+        }
+        
+        // Apply sorting
+        $sortBy = $request->input('sort_by', 'level');
+        $sortOrder = $request->input('sort_order', 'asc');
+        
+        $allowedSorts = ['level', 'av_damage', 'weight_pounds', 'weight_ounces', 'name'];
+        if (in_array($sortBy, $allowedSorts)) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->orderBy('level', 'asc');
+        }
+        
+        $query->orderBy('name'); // Secondary sort always by name
+        
+        $all = $query->get();
 
         // Preferred slot order (non-weapons). Slot 'Finger' is shown as 'Rings'.
-        $slotOrder = ['Finger', 'Neck', 'Body', 'Head', 'Face', 'Legs', 'Feet', 'Hands', 'Arms', 'Waist', 'Wrist'];
+        $slotOrder = ['Finger', 'Neck', 'Body', 'About', 'Head', 'Face', 'Legs', 'Feet', 'Hands', 'Arms', 'Waist', 'Wrist', 'Ears', 'Back'];
         $slotLabels = ['Finger' => 'Rings'];
 
         // Exotic form slots (shapeshifter equipment) get their own groups.
-        $exoticSlots = ['Hooves', 'Wings', 'Tail', 'Claws', 'Forepaws', 'Hindpaws', 'Horns'];
+        $exoticSlots = ['Hooves', 'Wings', 'Tail', 'Claws', 'Forepaws', 'Hindpaws', 'Horns', 'Foreclaws'];
+        
+        // Special slots that have type-based grouping priority (check type before slot)
+        $specialSlotTypes = ['Shield' => 'Shield', 'Hold' => 'Held']; // slot => group name
+        
+        // Item types that override slot-based grouping (e.g., instruments held in hand)
+        $typeOverridesSlot = ['Instrument'];
 
         // Preferred weapon-class order.
-        $weaponOrder = ['Axe', 'Sword', 'Mace', 'Whip', 'Flail', 'Dagger', 'Spear', 'Polearm', 'Staff', 'Club', 'Hammer', 'Bow', 'Crossbow'];
+        $weaponOrder = ['Axe', 'Sword', 'Mace', 'Whip', 'Flail', 'Dagger', 'Spear', 'Polearm', 'Staff', 'Club', 'Hammer', 'Bow', 'Crossbow', 'Exotic'];
 
         // Item types that should get their own top-level group (not tied to slot/weapon_class).
-        $typeGroups = ['Shield', 'Potion', 'Scroll', 'Wand', 'Talisman', 'Lockpicks', 'Food', 'Treasure', 'Miscellaneous', 'Drink Container', 'Key', 'Container', 'Instrument', 'Light', 'Ingredient', 'Artifact', 'Pill', 'Boat'];
+        $typeGroups = ['Shield', 'Potion', 'Scroll', 'Wand', 'Talisman', 'Lockpicks', 'Food', 'Treasure', 'Miscellaneous', 'Drink Container', 'Key', 'Container', 'Instrument', 'Light', 'Ingredient', 'Artifact', 'Pill', 'Boat', 'Pen'];
 
         $groups = [];
         foreach ($slotOrder as $s) {
@@ -267,11 +348,19 @@ class MudLogController extends Controller
         foreach ($typeGroups as $t) {
             $groups[$t] = collect();
         }
+        
+        // Initialize special slot groups
+        foreach ($specialSlotTypes as $groupName) {
+            if (!isset($groups[$groupName])) {
+                $groups[$groupName] = collect();
+            }
+        }
 
         $otherNonWeapon = collect();
         $otherWeapon = collect();
 
         foreach ($all as $item) {
+            // Check for weapons (by weapon_class or wield slot)
             if ($item->weapon_class) {
                 $key = ucfirst(strtolower($item->weapon_class));
                 if (array_key_exists($key, $groups)) {
@@ -281,21 +370,45 @@ class MudLogController extends Controller
                 }
                 continue;
             }
-            // Group by item_type for non-slot items (shields, potions, scrolls, ...).
+            
+            // Items with Wield slot but no weapon_class are still weapons
+            if ($item->slot === 'Wield') {
+                $otherWeapon->push($item);
+                continue;
+            }
+            
+            // Check type overrides first (instruments, etc. that should have their own category)
             $type = $item->item_type ? ucfirst(strtolower($item->item_type)) : null;
-            if ($type && in_array($type, $typeGroups, true)) {
+            if ($type && in_array($type, $typeOverridesSlot, true)) {
                 $groups[$type]->push($item);
                 continue;
             }
+            
+            // Check special slot+type combinations (e.g., Shields)
+            if ($item->slot && isset($specialSlotTypes[$item->slot])) {
+                $groups[$specialSlotTypes[$item->slot]]->push($item);
+                continue;
+            }
+
+            // Check slot-based grouping (for wearable equipment like rings, neck, etc.)
             $slot = $item->slot;
             if ($slot && in_array($slot, $slotOrder, true)) {
                 $label = $slotLabels[$slot] ?? $slot;
                 $groups[$label]->push($item);
-            } elseif ($slot && in_array($slot, $exoticSlots, true)) {
-                $groups[$slot]->push($item);
-            } else {
-                $otherNonWeapon->push($item);
+                continue;
             }
+            if ($slot && in_array($slot, $exoticSlots, true)) {
+                $groups[$slot]->push($item);
+                continue;
+            }
+
+            // Group by item_type for non-slot items (potions, scrolls, ...).
+            if ($type && in_array($type, $typeGroups, true)) {
+                $groups[$type]->push($item);
+                continue;
+            }
+
+            $otherNonWeapon->push($item);
         }
 
         // Append dynamic "Other" buckets for unknown weapon classes / unmapped slots.
@@ -310,11 +423,58 @@ class MudLogController extends Controller
 
         // Drop empty groups.
         $groups = collect($groups)->filter(fn ($g) => $g->isNotEmpty())->all();
+        
+        // Organize items into type-based categories for separate tables
+        $tableGroups = [];
+        $typeOrder = ['Weapon', 'Armor', 'Clothing', 'Potion', 'Scroll', 'Wand', 'Staff', 'Talisman', 'Shield', 'Container', 'Instrument', 'Food', 'Treasure', 'Boat', 'Key', 'Light', 'Ingredient', 'Pill', 'Miscellaneous'];
+        
+        // Initialize type groups
+        foreach ($typeOrder as $type) {
+            $tableGroups[$type] = collect();
+        }
+        $tableGroups['Other'] = collect();
+        
+        // Categorize all items by type
+        foreach ($all as $item) {
+            $type = $item->item_type ? ucfirst(strtolower($item->item_type)) : null;
+            
+            if ($type && isset($tableGroups[$type])) {
+                $tableGroups[$type]->push($item);
+            } elseif ($item->weapon_class || $item->slot === 'Wield') {
+                $tableGroups['Weapon']->push($item);
+            } else {
+                $tableGroups['Other']->push($item);
+            }
+        }
+        
+        // Remove empty groups
+        $tableGroups = collect($tableGroups)->filter(fn ($g) => $g->isNotEmpty())->all();
 
         $pendingCount = Item::where('status', 'pending')->count();
         $totalCount = $all->count();
+        
+        // Get filter options
+        $types = Item::where('status', 'confirmed')->whereNotNull('item_type')->distinct()->pluck('item_type')->sort()->values();
+        $materials = Item::where('status', 'confirmed')->whereNotNull('material')->distinct()->pluck('material')->sort()->values();
+        $attackTypes = Item::where('status', 'confirmed')->whereNotNull('attack_type')->distinct()->pluck('attack_type')->sort()->values();
+        $flags = \App\Models\ItemFlag::whereHas('item', function ($q) {
+            $q->where('status', 'confirmed');
+        })->distinct()->pluck('flag')->sort()->values();
+        
+        // Current filter values
+        $currentType = $request->input('type');
+        $currentMaterial = $request->input('material');
+        $currentAttackType = $request->input('attack_type');
+        $currentFlag = $request->input('flag');
+        $currentSortBy = $sortBy;
+        $currentSortOrder = $sortOrder;
 
-        return view('mudlogs.items', compact('groups', 'pendingCount', 'totalCount'));
+        return view('mudlogs.items', compact(
+            'groups', 'tableGroups', 'pendingCount', 'totalCount',
+            'types', 'materials', 'attackTypes', 'flags',
+            'currentType', 'currentMaterial', 'currentAttackType', 'currentFlag',
+            'currentSortBy', 'currentSortOrder'
+        ));
     }
 
     public function pending()
