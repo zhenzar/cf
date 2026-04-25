@@ -10,6 +10,7 @@ use App\Models\Item;
 use App\Models\LogFile;
 use App\Services\LogScanner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class MudLogController extends Controller
