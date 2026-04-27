@@ -51,9 +51,9 @@
         </header>
         <div class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
             <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
-                <div class="text-[13px] leading-[20px] flex-1 p-6 pb-6 lg:p-20 lg:pb-10 bg-white dark:bg-[#161615] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
-                    <h1 class="mb-2 font-semibold text-2xl" style="color: #1b1b18;">Carrion Fields Helper</h1>
-                    <p class="mb-4" style="color: #706f6c;">
+                <div class="text-[13px] leading-[20px] flex-1 p-6 pb-6 lg:p-20 lg:pb-10 bg-black text-white shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
+                    <h1 class="mb-2 font-semibold text-2xl text-white">Carrion Fields Helper</h1>
+                    <p class="mb-4 text-gray-300">
                         A companion tool for adventurers in the realm of Carrion Fields.
                         Track your exploration, analyze items, and manage your journey.
                     </p>
@@ -61,19 +61,19 @@
                     <ul class="flex flex-col mb-6 space-y-3">
                         <li class="flex items-center gap-3">
                             <span class="flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">1</span>
-                            <span style="color: #1b1b18;">
+                            <span class="text-white">
                                 <strong>Area Explorer</strong> - Track which areas your characters have visited
                             </span>
                         </li>
                         <li class="flex items-center gap-3">
                             <span class="flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">2</span>
-                            <span style="color: #1b1b18;">
+                            <span class="text-white">
                                 <strong>Item Database</strong> - Browse and search equipment scraped from CF
                             </span>
                         </li>
                         <li class="flex items-center gap-3">
                             <span class="flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">3</span>
-                            <span style="color: #1b1b18;">
+                            <span class="text-white">
                                 <strong>Log Scanner</strong> - Upload Mudlet logs to extract items and data
                             </span>
                         </li>
@@ -106,7 +106,7 @@
                         @endif
                     </div>
 
-                    <p class="mt-6 text-xs" style="color: #706f6c;">
+                    <p class="mt-6 text-xs text-gray-400">
                         Not affiliated with Carrion Fields. All game content belongs to their respective owners.
                     </p>
                 </div>
