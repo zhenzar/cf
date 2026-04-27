@@ -9,6 +9,38 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+            .container { max-width: 896px; width: 100%; display: flex; flex-direction: column-reverse; background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+            @media (min-width: 1024px) { .container { flex-direction: row; } }
+            .left { flex: 1; padding: 40px 24px; background: #000; }
+            @media (min-width: 1024px) { .left { padding: 80px 80px 40px; } }
+            .right { width: 100%; aspect-ratio: 335/364; background: linear-gradient(to bottom right, #7f1d1d, #450a0a); display: flex; align-items: center; justify-content: center; position: relative; }
+            @media (min-width: 1024px) { .right { width: 438px; aspect-ratio: auto; } }
+            h1 { font-size: 24px; font-weight: 600; margin-bottom: 8px; color: #fff; }
+            p.desc { font-size: 13px; line-height: 20px; color: #d1d5db; margin-bottom: 24px; }
+            ul { list-style: none; margin-bottom: 24px; }
+            li { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 13px; color: #fff; }
+            .badge { width: 24px; height: 24px; border-radius: 50%; background: #fef3c7; color: #92400e; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+            .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+            .btn-primary { background: #991b1b; color: #fff; }
+            .btn-primary:hover { background: #7f1d1d; }
+            .btn-secondary { background: transparent; border: 1px solid #4b5563; color: #fff; }
+            .btn-secondary:hover { border-color: #6b7280; }
+            .btn-dark { background: #1f2937; color: #fff; }
+            .btn-dark:hover { background: #111827; }
+            .footer { font-size: 12px; color: #9ca3af; margin-top: 24px; }
+            .card { text-align: center; color: #fff; padding: 32px; }
+            .card .icon { font-size: 64px; margin-bottom: 16px; }
+            .card h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+            .card p { font-size: 14px; color: #fca5a5; margin-bottom: 16px; }
+            .card .quote { font-size: 12px; color: #fca5a5; border-top: 1px solid #7f1d1d; padding-top: 16px; margin-top: 16px; }
+            .nav { position: absolute; top: 24px; right: 24px; }
+            .nav a { color: #fff; text-decoration: none; margin-left: 16px; font-size: 14px; }
+            .flex { display: flex; gap: 12px; margin-bottom: 16px; }
+            .flex-col { flex-direction: column; }
+        </style>
 
         <!-- Styles / Scripts -->
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -19,115 +51,68 @@
             </style>
         @endif
     </head>
-    <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
-        <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
+    <body>
+        <div class="nav">
             @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
-                    @auth
-                        <a
-                            href="{{ url('/dashboard') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal"
-                        >
-                            Dashboard
-                        </a>
-                    @else
-                        <a
-                            href="{{ route('login') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal"
-                        >
-                            Log in
-                        </a>
-
-                        @if (Route::has('register'))
-                            <a
-                                href="{{ route('register') }}"
-                                class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                                Register
-                            </a>
-                        @endif
-                    @endauth
-                </nav>
+                @auth
+                    <a href="{{ url('/dashboard') }}">Dashboard</a>
+                @else
+                    <a href="{{ route('login') }}">Log in</a>
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}">Register</a>
+                    @endif
+                @endauth
             @endif
-        </header>
-        <div class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
-            <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
-                <div class="text-[13px] leading-[20px] flex-1 p-6 pb-6 lg:p-20 lg:pb-10 bg-black text-white shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
-                    <h1 class="mb-2 font-semibold text-2xl text-white">Carrion Fields Helper</h1>
-                    <p class="mb-4 text-gray-300">
-                        A companion tool for adventurers in the realm of Carrion Fields.
-                        Track your exploration, analyze items, and manage your journey.
-                    </p>
-
-                    <ul class="flex flex-col mb-6 space-y-3">
-                        <li class="flex items-center gap-3">
-                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">1</span>
-                            <span class="text-white">
-                                <strong>Area Explorer</strong> - Track which areas your characters have visited
-                            </span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">2</span>
-                            <span class="text-white">
-                                <strong>Item Database</strong> - Browse and search equipment scraped from CF
-                            </span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">3</span>
-                            <span class="text-white">
-                                <strong>Log Scanner</strong> - Upload Mudlet logs to extract items and data
-                            </span>
-                        </li>
-                    </ul>
-
-                    <div class="flex flex-col gap-3">
-                        <a href="https://carrionfields.net" target="_blank" class="inline-flex items-center justify-center px-5 py-2.5 bg-red-800 hover:bg-red-900 text-white rounded-md text-sm font-medium transition-colors">
-                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                            </svg>
-                            Enter Carrion Fields
-                        </a>
-                        @if (Route::has('login'))
-                            @auth
-                                <a href="{{ url('/dashboard') }}" class="inline-flex items-center justify-center px-5 py-2.5 border border-gray-300 hover:border-gray-400 text-gray-700 rounded-md text-sm font-medium transition-colors">
-                                    Go to Dashboard
-                                </a>
-                            @else
-                                <div class="flex gap-3">
-                                    <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-5 py-2.5 border border-gray-300 hover:border-gray-400 text-gray-700 rounded-md text-sm font-medium transition-colors flex-1">
-                                        Log In
-                                    </a>
-                                    @if (Route::has('register'))
-                                        <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-gray-800 hover:bg-gray-900 text-white rounded-md text-sm font-medium transition-colors flex-1">
-                                            Sign Up
-                                        </a>
-                                    @endif
-                                </div>
-                            @endauth
-                        @endif
-                    </div>
-
-                    <p class="mt-6 text-xs text-gray-400">
-                        Not affiliated with Carrion Fields. All game content belongs to their respective owners.
-                    </p>
-                </div>
-                <div class="bg-gradient-to-br from-red-900 to-red-950 dark:from-red-950 dark:to-black relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/364] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden flex items-center justify-center">
-                    <div class="text-center text-white p-8">
-                        <div class="text-6xl mb-4">⚔️</div>
-                        <h2 class="text-2xl font-bold mb-2">Carrion Fields</h2>
-                        <p class="text-red-200 text-sm">A dark fantasy MUD where only the strong survive.</p>
-                        <div class="mt-6 pt-6 border-t border-red-800">
-                            <p class="text-xs text-red-300">
-                                "In the Fields, death is not the end...<br>merely a temporary setback."
-                            </p>
-                        </div>
-                    </div>
-                    <div class="absolute inset-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"></div>
-                </div>
-            </main>
         </div>
 
-        @if (Route::has('login'))
-            <div class="h-14.5 hidden lg:block"></div>
-        @endif
+        <div class="container">
+            <div class="left">
+                <h1>Carrion Fields Helper</h1>
+                <p class="desc">A companion tool for adventurers in the realm of Carrion Fields. Track your exploration, analyze items, and manage your journey.</p>
+
+                <ul>
+                    <li>
+                        <span class="badge">1</span>
+                        <span><strong>Area Explorer</strong> - Track which areas your characters have visited</span>
+                    </li>
+                    <li>
+                        <span class="badge">2</span>
+                        <span><strong>Item Database</strong> - Browse and search equipment scraped from CF</span>
+                    </li>
+                    <li>
+                        <span class="badge">3</span>
+                        <span><strong>Log Scanner</strong> - Upload Mudlet logs to extract items and data</span>
+                    </li>
+                </ul>
+
+                <div class="flex flex-col">
+                    <a href="https://carrionfields.net" target="_blank" class="btn btn-primary" style="margin-bottom: 12px;">
+                        Enter Carrion Fields
+                    </a>
+                    @if (Route::has('login'))
+                        @auth
+                            <a href="{{ url('/dashboard') }}" class="btn btn-secondary">Go to Dashboard</a>
+                        @else
+                            <div class="flex">
+                                <a href="{{ route('login') }}" class="btn btn-secondary" style="flex: 1; margin-right: 12px;">Log In</a>
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}" class="btn btn-dark" style="flex: 1;">Sign Up</a>
+                                @endif
+                            </div>
+                        @endauth
+                    @endif
+                </div>
+
+                <p class="footer">Not affiliated with Carrion Fields. All game content belongs to their respective owners.</p>
+            </div>
+            <div class="right">
+                <div class="card">
+                    <div class="icon">⚔️</div>
+                    <h2>Carrion Fields</h2>
+                    <p>A dark fantasy MUD where only the strong survive.</p>
+                    <div class="quote">"In the Fields, death is not the end...<br>merely a temporary setback."</div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
