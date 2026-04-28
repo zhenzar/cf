@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Item;
 use App\Models\LogFile;
+use App\Models\Mob;
+use App\Models\MobEquipment;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Finder\Finder;
 
@@ -16,7 +18,10 @@ class LogScanner
      */
     public const FLAGS_IGNORED_FOR_DEDUP = ['blessed', 'magical'];
 
-    public function __construct(private ItemParser $parser) {}
+    public function __construct(
+        private ItemParser $parser,
+        private MobParser $mobParser
+    ) {}
 
     /**
      * Recursively scan a directory for .txt files and ingest each.
@@ -190,9 +195,48 @@ class LogScanner
             $logFile->items_count = $logFile->items()->count();
             $logFile->reviewed = true;
             $logFile->save();
+
+            // Parse and save mobs from this log file
+            $this->saveMobsFromLog($content, $logFile);
         });
 
         return ['log_file' => $logFile, 'items_new' => $itemsNew, 'new_file' => $newFile];
+    }
+
+    /**
+     * Parse mobs from log content and save them.
+     */
+    private function saveMobsFromLog(string $content, LogFile $logFile): void
+    {
+        $mobs = $this->mobParser->parseMobs($content);
+
+        foreach ($mobs as $mobData) {
+            // Find or create mob by name
+            $mob = Mob::firstOrCreate(
+                ['name' => $mobData['name']],
+                ['notes' => 'Auto-detected from log scan']
+            );
+
+            // Add/update equipment for this mob
+            foreach ($mobData['equipment'] as $eqData) {
+                // Try to find matching item in database
+                $item = Item::where('name', $eqData['item_name'])->first();
+
+                // Check if this exact equipment already exists for this mob
+                $existingEq = $mob->equipment()
+                    ->where('slot', $eqData['slot'])
+                    ->where('item_name', $eqData['item_name'])
+                    ->first();
+
+                if (! $existingEq) {
+                    $mob->equipment()->create([
+                        'slot' => $eqData['slot'],
+                        'item_name' => $eqData['item_name'],
+                        'item_id' => $item?->id,
+                    ]);
+                }
+            }
+        }
     }
 
     /**
