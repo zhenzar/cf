@@ -5,6 +5,7 @@
         ['label' => 'Log scans',  'route' => 'mudlogs.index',    'match' => ['mudlogs.index', 'mudlogs.show', 'mudlogs.toggle', 'mudlogs.scan', 'mudlogs.upload', 'mudlogs.destroy']],
         ['label' => 'Items',      'route' => 'mudlogs.items',    'match' => ['mudlogs.items', 'mudlogs.pending', 'mudlogs.pending.*']],
         ['label' => 'Areas',      'route' => 'areas.index',      'match' => ['areas.index', 'characters.areas']],
+        ['label' => 'Mobs',       'route' => 'mobs.index',       'match' => ['mobs.index', 'mobs.create', 'mobs.edit', 'mobs.store', 'mobs.update', 'mobs.destroy']],
     ];
 @endphp
 
