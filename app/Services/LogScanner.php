@@ -6,6 +6,7 @@ use App\Models\Item;
 use App\Models\LogFile;
 use App\Models\Mob;
 use App\Models\MobEquipment;
+use App\Models\ScannedChar;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Finder\Finder;
 
@@ -20,7 +21,8 @@ class LogScanner
 
     public function __construct(
         private ItemParser $parser,
-        private MobParser $mobParser
+        private MobParser $mobParser,
+        private CharacterParser $charParser
     ) {}
 
     /**
@@ -126,7 +128,7 @@ class LogScanner
         $parsed = $this->parser->parseFile($content);
 
         $itemsNew = 0;
-        DB::transaction(function () use ($parsed, $logFile, &$itemsNew) {
+        DB::transaction(function () use ($parsed, $logFile, &$itemsNew, $content) {
             foreach ($parsed as $data) {
                 $hash = hash('sha256', $data['raw_text']);
                 $statsHash = $this->computeStatsHashFromData($data);
@@ -198,9 +200,32 @@ class LogScanner
 
             // Parse and save mobs from this log file
             $this->saveMobsFromLog($content, $logFile);
+
+            // Parse and save characters from this log file
+            $this->saveCharactersFromLog($content, $logFile);
         });
 
         return ['log_file' => $logFile, 'items_new' => $itemsNew, 'new_file' => $newFile];
+    }
+
+    /**
+     * Parse characters from log content and save them.
+     */
+    private function saveCharactersFromLog(string $content, LogFile $logFile): void
+    {
+        $chars = $this->charParser->parseCharacters($content);
+
+        foreach ($chars as $charData) {
+            // Only save if not already exists (by name)
+            $exists = ScannedChar::where('name', $charData['name'])->exists();
+            if (! $exists) {
+                ScannedChar::create([
+                    'name' => $charData['name'],
+                    'log_file_id' => $logFile->id,
+                    'source_line' => $charData['source_line'],
+                ]);
+            }
+        }
     }
 
     /**
