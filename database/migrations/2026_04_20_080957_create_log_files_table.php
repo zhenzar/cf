@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('log_files', function (Blueprint $table) {
             $table->id();
-            $table->string('path', 1024)->unique();
+            $table->string('path', 767)->unique();
             $table->string('filename');
             $table->string('source', 20)->default('scan'); // scan | upload
             $table->unsignedBigInteger('size')->default(0);
