@@ -84,6 +84,7 @@ class LogScanner
                 $logFile->items()->syncWithoutDetaching([$iid => ['created_at' => now()]]);
             }
             $logFile->items_count = $logFile->items()->count();
+            $logFile->reviewed = true;
             $logFile->save();
 
             return ['log_file' => $logFile, 'items_new' => 0, 'new_file' => false];
@@ -169,6 +170,7 @@ class LogScanner
             }
 
             $logFile->items_count = $logFile->items()->count();
+            $logFile->reviewed = true;
             $logFile->save();
         });
 
