@@ -520,6 +520,31 @@ class MudLogController extends Controller
         return back()->with('status', 'Item ignored.');
     }
 
+    public function overwritePending(Item $item)
+    {
+        abort_unless($item->status === 'pending', 404);
+
+        // Find existing confirmed items with the same name
+        $existing = Item::where('name', $item->name)
+            ->where('status', 'confirmed')
+            ->get();
+
+        // Delete existing items and their relationships
+        foreach ($existing as $existingItem) {
+            $existingItem->protections()->delete();
+            $existingItem->affects()->delete();
+            $existingItem->flags()->delete();
+            $existingItem->spells()->delete();
+            $existingItem->logFiles()->detach();
+            $existingItem->delete();
+        }
+
+        // Confirm the pending item
+        $item->update(['status' => 'confirmed']);
+
+        return back()->with('status', 'Item overwritten existing entries.');
+    }
+
     /**
      * Show edit form for an item.
      */

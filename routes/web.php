@@ -59,6 +59,7 @@ Route::middleware('auth')->group(function () {
     Route::get('mudlogs/pending', [MudLogController::class, 'pending'])->name('mudlogs.pending');
     Route::post('mudlogs/pending/{item}/confirm', [MudLogController::class, 'confirmPending'])->name('mudlogs.pending.confirm');
     Route::post('mudlogs/pending/{item}/ignore', [MudLogController::class, 'ignorePending'])->name('mudlogs.pending.ignore');
+    Route::post('mudlogs/pending/{item}/overwrite', [MudLogController::class, 'overwritePending'])->name('mudlogs.pending.overwrite');
     Route::post('mudlogs/scan', [MudLogController::class, 'scan'])->name('mudlogs.scan');
     Route::post('mudlogs/rescan-all', [MudLogController::class, 'rescanAll'])->name('mudlogs.rescan-all');
     Route::post('mudlogs/clear-database', [MudLogController::class, 'clearDatabase'])->name('mudlogs.clear-database');

@@ -44,6 +44,13 @@
                                     Add anyway
                                 </button>
                             </form>
+                            <form method="POST" action="{{ route('mudlogs.pending.overwrite', $item) }}"
+                                  onsubmit="return confirm('Overwrite existing item(s) with this new version?');">
+                                @csrf
+                                <button class="px-3 py-1.5 bg-amber-600 text-white text-sm rounded-md hover:bg-amber-700">
+                                    Overwrite
+                                </button>
+                            </form>
                             <form method="POST" action="{{ route('mudlogs.pending.ignore', $item) }}">
                                 @csrf
                                 <button class="px-3 py-1.5 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300">
