@@ -89,7 +89,7 @@
                 </div>
             @endif
 
-            <div class="grid md:grid-cols-2 gap-4">
+            <div class="max-w-2xl">
                 <div class="bg-white shadow-sm rounded-lg p-4" x-data="fileUploader()">
                     <h3 class="font-semibold text-gray-800 mb-2">Upload Log Files</h3>
                     <form @submit.prevent="uploadFiles" class="space-y-2">
@@ -248,7 +248,7 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap gap-2 items-center">
+            <div class="mt-6 flex flex-wrap gap-2 items-center">
                 <form method="GET" action="{{ route('mudlogs.index') }}" class="flex flex-wrap gap-2 items-center flex-1">
                     <select name="filter" onchange="this.form.submit()"
                             class="border-gray-300 rounded-md shadow-sm text-sm">
@@ -346,7 +346,7 @@
                                 </tr>
                             @empty
                                 <tr><td colspan="6" class="px-4 py-8 text-center text-gray-500 text-sm">
-                                    No log files yet. Scan a directory or upload files above.
+                                    No log files yet. Upload files above.
                                 </td></tr>
                             @endforelse
                         </tbody>
