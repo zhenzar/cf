@@ -90,29 +90,161 @@
             @endif
 
             <div class="grid md:grid-cols-2 gap-4">
-                <div class="bg-white shadow-sm rounded-lg p-4">
-                    <h3 class="font-semibold text-gray-800 mb-2">Scan a directory</h3>
-                    <form method="POST" action="{{ route('mudlogs.scan') }}" class="flex gap-2">
+                <div class="bg-white shadow-sm rounded-lg p-4" x-data="fileUploader()">
+                    <h3 class="font-semibold text-gray-800 mb-2">Upload Log Files</h3>
+                    <form @submit.prevent="uploadFiles" class="space-y-2">
                         @csrf
-                        <input type="text" name="path" placeholder="/absolute/path/to/logs"
-                               class="flex-1 border-gray-300 rounded-md shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <button class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700">
-                            Scan
+                        <input type="file" x-ref="fileInput" @change="handleFileSelect" multiple accept=".txt"
+                               class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        <button :disabled="uploading || files.length === 0"
+                                :class="uploading || files.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'"
+                                class="w-full px-4 py-2 text-white text-sm rounded-md transition-colors">
+                            <span x-show="!uploading">Upload & Process</span>
+                            <span x-show="uploading">Uploading... <span x-text="currentFile"></span> / <span x-text="totalFiles"></span></span>
                         </button>
                     </form>
-                    <p class="text-xs text-gray-500 mt-2">Recursively reads all <code>.txt</code> files.</p>
-                </div>
 
-                <div class="bg-white shadow-sm rounded-lg p-4">
-                    <h3 class="font-semibold text-gray-800 mb-2">Upload log files</h3>
-                    <form method="POST" action="{{ route('mudlogs.upload') }}" enctype="multipart/form-data" class="flex gap-2">
-                        @csrf
-                        <input type="file" name="files[]" multiple required accept=".txt,text/plain" class="flex-1 text-sm">
-                        <button class="px-4 py-2 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-700">
-                            Upload
-                        </button>
-                    </form>
-                    <p class="text-xs text-gray-500 mt-2">Only <code>.txt</code> files, max 10&nbsp;MB each. Select multiple files at once.</p>
+                    <!-- Overall Progress -->
+                    <div x-show="uploading" class="mt-3">
+                        <div class="flex justify-between text-xs text-gray-600 mb-1">
+                            <span>Overall Progress</span>
+                            <span x-text="Math.round(overallProgress) + '%'"></span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+                                 :style="'width: ' + overallProgress + '%'"></div>
+                        </div>
+                    </div>
+
+                    <!-- Current File Progress -->
+                    <div x-show="uploading && currentProgress > 0" class="mt-2">
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span x-text="currentFileName"></span>
+                            <span x-text="Math.round(currentProgress) + '%'"></span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-green-500 h-1.5 rounded-full transition-all duration-200"
+                                 :style="'width: ' + currentProgress + '%'"></div>
+                        </div>
+                    </div>
+
+                    <!-- Status Messages -->
+                    <div x-show="statusMessage" x-text="statusMessage"
+                         :class="statusType === 'error' ? 'text-red-600' : (statusType === 'success' ? 'text-green-600' : 'text-blue-600')"
+                         class="mt-2 text-sm"></div>
+
+                    <!-- Results Summary -->
+                    <div x-show="results.length > 0" class="mt-3 p-2 bg-gray-50 rounded text-xs space-y-1">
+                        <div class="font-medium text-gray-700">Results:</div>
+                        <template x-for="result in results" :key="result.file">
+                            <div class="flex justify-between">
+                                <span x-text="result.file" class="truncate max-w-[200px]"></span>
+                                <span :class="result.status === 'success' ? 'text-green-600' : 'text-red-600'"
+                                      x-text="result.message"></span>
+                            </div>
+                        </template>
+                    </div>
+
+                    <p class="mt-2 text-xs text-gray-500">
+                        Upload .txt log files from Mudlet (typically in ~/.config/mudlet/profiles/YourProfile/logs/)<br>
+                        Files are processed one at a time so you can track progress.
+                    </p>
+
+                    <script>
+                        function fileUploader() {
+                            return {
+                                files: [],
+                                uploading: false,
+                                currentFile: 0,
+                                totalFiles: 0,
+                                currentFileName: '',
+                                currentProgress: 0,
+                                overallProgress: 0,
+                                statusMessage: '',
+                                statusType: 'info',
+                                results: [],
+
+                                handleFileSelect(e) {
+                                    this.files = Array.from(e.target.files).filter(f => f.name.endsWith('.txt'));
+                                    this.results = [];
+                                    this.statusMessage = this.files.length > 0 ? `${this.files.length} file(s) selected` : '';
+                                },
+
+                                async uploadFiles() {
+                                    if (this.files.length === 0) return;
+
+                                    this.uploading = true;
+                                    this.totalFiles = this.files.length;
+                                    this.currentFile = 0;
+                                    this.results = [];
+                                    this.statusMessage = 'Starting upload...';
+                                    this.statusType = 'info';
+
+                                    for (let i = 0; i < this.files.length; i++) {
+                                        const file = this.files[i];
+                                        this.currentFile = i + 1;
+                                        this.currentFileName = file.name;
+                                        this.currentProgress = 0;
+
+                                        try {
+                                            await this.uploadSingleFile(file);
+                                            this.results.push({
+                                                file: file.name,
+                                                status: 'success',
+                                                message: '✓ Done'
+                                            });
+                                        } catch (error) {
+                                            this.results.push({
+                                                file: file.name,
+                                                status: 'error',
+                                                message: '✗ Failed'
+                                            });
+                                        }
+
+                                        this.overallProgress = ((i + 1) / this.totalFiles) * 100;
+                                    }
+
+                                    this.uploading = false;
+                                    this.currentProgress = 100;
+                                    this.statusMessage = `Completed: ${this.results.filter(r => r.status === 'success').length}/${this.totalFiles} files uploaded`;
+                                    this.statusType = 'success';
+
+                                    // Refresh page after 2 seconds to show new files
+                                    setTimeout(() => window.location.reload(), 2000);
+                                },
+
+                                uploadSingleFile(file) {
+                                    return new Promise((resolve, reject) => {
+                                        const formData = new FormData();
+                                        formData.append('files[]', file);
+                                        formData.append('_token', document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}');
+
+                                        const xhr = new XMLHttpRequest();
+
+                                        xhr.upload.addEventListener('progress', (e) => {
+                                            if (e.lengthComputable) {
+                                                this.currentProgress = (e.loaded / e.total) * 100;
+                                            }
+                                        });
+
+                                        xhr.addEventListener('load', () => {
+                                            if (xhr.status >= 200 && xhr.status < 300) {
+                                                resolve(xhr.response);
+                                            } else {
+                                                reject(new Error(`HTTP ${xhr.status}`));
+                                            }
+                                        });
+
+                                        xhr.addEventListener('error', () => reject(new Error('Network error')));
+                                        xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
+
+                                        xhr.open('POST', '{{ route('mudlogs.upload') }}');
+                                        xhr.send(formData);
+                                    });
+                                }
+                            }
+                        }
+                    </script>
                 </div>
             </div>
 
