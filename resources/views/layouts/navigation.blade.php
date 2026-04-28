@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('mudlogs.index')" :active="request()->routeIs('mudlogs.*')">
                         {{ __('Mud Logs') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('mobs.index')" :active="request()->routeIs('mobs.*')">
+                        {{ __('Mobs') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -83,6 +86,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('mudlogs.index')" :active="request()->routeIs('mudlogs.*')">
                 {{ __('Mud Logs') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('mobs.index')" :active="request()->routeIs('mobs.*')">
+                {{ __('Mobs') }}
             </x-responsive-nav-link>
         </div>
 

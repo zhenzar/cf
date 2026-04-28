@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CharacterController;
+use App\Http\Controllers\MobController;
 use App\Http\Controllers\MudLogController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -70,6 +71,14 @@ Route::middleware('auth')->group(function () {
     Route::post('mudlogs/upload', [MudLogController::class, 'upload'])->name('mudlogs.upload');
     Route::get('mudlogs/{mudlog}', [MudLogController::class, 'show'])->name('mudlogs.show');
     Route::post('mudlogs/{mudlog}/toggle', [MudLogController::class, 'toggleReviewed'])->name('mudlogs.toggle');
+
+    // Mobs
+    Route::get('mobs', [MobController::class, 'index'])->name('mobs.index');
+    Route::get('mobs/create', [MobController::class, 'create'])->name('mobs.create');
+    Route::post('mobs', [MobController::class, 'store'])->name('mobs.store');
+    Route::get('mobs/{mob}/edit', [MobController::class, 'edit'])->name('mobs.edit');
+    Route::put('mobs/{mob}', [MobController::class, 'update'])->name('mobs.update');
+    Route::delete('mobs/{mob}', [MobController::class, 'destroy'])->name('mobs.destroy');
     Route::post('mudlogs/{mudlog}/rescan', [MudLogController::class, 'rescan'])->name('mudlogs.rescan');
     Route::delete('mudlogs/{mudlog}', [MudLogController::class, 'destroy'])->name('mudlogs.destroy');
 });
