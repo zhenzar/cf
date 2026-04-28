@@ -223,7 +223,7 @@ class MudLogController extends Controller
     {
         $request->validate([
             'files' => ['required', 'array'],
-            'files.*' => ['file', 'mimes:txt', 'max:10240'], // .txt only, max 10MB each
+            'files.*' => ['file', 'mimes:txt', 'max:51200'], // .txt only, max 50MB each (before compression)
         ]);
 
         $user = Auth::user();
@@ -259,6 +259,18 @@ class MudLogController extends Controller
 
             $dest = $storeDir . DIRECTORY_SEPARATOR . date('YmdHis') . '_' . $file->getClientOriginalName();
             $file->move($storeDir, basename($dest));
+
+            // Compress file with gzip to save space
+            $gzDest = $dest . '.gz';
+            $fp = gzopen($gzDest, 'wb9'); // max compression
+            if ($fp) {
+                gzwrite($fp, $content);
+                gzclose($fp);
+                // Remove original uncompressed file
+                @unlink($dest);
+                // Update path to point to compressed file
+                $dest = $gzDest;
+            }
 
             // Process immediately instead of queue (for shared hosting compatibility)
             try {

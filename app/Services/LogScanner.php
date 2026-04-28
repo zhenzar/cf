@@ -50,14 +50,32 @@ class LogScanner
     }
 
     /**
-     * Ingest a single file path. Returns ['log_file' => LogFile, 'items_new' => int, 'new_file' => bool].
+     * Read file content, handling both regular and gzipped files.
      */
-    public function ingestFile(string $path, string $filename, string $source = 'scan', ?int $size = null): array
+    private function readFile(string $path): string
     {
+        // Check if file is gzipped
+        if (str_ends_with($path, '.gz') || str_ends_with($path, '.gzip')) {
+            $content = gzfile($path);
+            if ($content === false) {
+                throw new \RuntimeException("Cannot read gzipped file {$path}");
+            }
+            return implode('', $content);
+        }
+
         $content = @file_get_contents($path);
         if ($content === false) {
             throw new \RuntimeException("Cannot read {$path}");
         }
+        return $content;
+    }
+
+    /**
+     * Ingest a single file path. Returns ['log_file' => LogFile, 'items_new' => int, 'new_file' => bool].
+     */
+    public function ingestFile(string $path, string $filename, string $source = 'scan', ?int $size = null): array
+    {
+        $content = $this->readFile($path);
         $size = $size ?? strlen($content);
         $contentHash = hash('sha256', $content);
 
