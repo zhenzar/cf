@@ -67,6 +67,7 @@ class ScrapeCfItems extends Command
                         'alignment' => $cfItem['align'] ?? null,
                         'raw_text' => $rawText,
                         'hash' => $hash,
+                        'log_file_id' => null,
                     ]);
                     
                     // Add affects if present
