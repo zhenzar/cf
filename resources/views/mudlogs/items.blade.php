@@ -202,8 +202,10 @@
                                                 </div>
                                             @endif
                                             @if ($item->area)
-                                                <div class="mt-1 text-[10px] text-emerald-600" title="Area: {{ $item->area->name }}">
-                                                    {{ $item->area->name }}
+                                                <div class="mt-1 text-[10px] text-emerald-600">
+                                                    <a href="{{ route('areas.wiki', $item->area) }}" class="hover:text-emerald-800 hover:underline" title="View area wiki">
+                                                        {{ $item->area->name }}
+                                                    </a>
                                                 </div>
                                             @endif
                                             @if ($item->note)
