@@ -19,7 +19,7 @@ return new class extends Migration
         });
 
         // Backfill pivot from existing items.log_file_id.
-        \DB::statement('INSERT OR IGNORE INTO item_log_file (item_id, log_file_id, created_at)
+        \DB::statement('INSERT IGNORE INTO item_log_file (item_id, log_file_id, created_at)
                         SELECT id, log_file_id, created_at FROM items WHERE log_file_id IS NOT NULL');
     }
 
