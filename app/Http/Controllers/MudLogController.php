@@ -25,9 +25,12 @@ class MudLogController extends Controller
 
         $query = LogFile::query()->withCount('items')->orderByDesc('created_at');
 
-        // Non-zhenzar users only see their own files
+        // Non-zhenzar users only see their own files, plus legacy files with no user_id
         if (! $isZhenzar) {
-            $query->where('user_id', $user->id);
+            $query->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->orWhereNull('user_id');
+            });
         }
 
         if ($q !== '') {
@@ -256,7 +259,14 @@ class MudLogController extends Controller
 
             $dest = $storeDir . DIRECTORY_SEPARATOR . date('YmdHis') . '_' . $file->getClientOriginalName();
             $file->move($storeDir, basename($dest));
-            IngestLogFile::dispatch($dest, basename($dest), 'upload', null, $user->id);
+
+            // Process immediately instead of queue (for shared hosting compatibility)
+            try {
+                $scanner = app(LogScanner::class);
+                $scanner->ingestFile($dest, basename($dest), 'upload', filesize($dest), $user->id);
+            } catch (\Throwable $e) {
+                \Log::error("Failed to process {$dest}: " . $e->getMessage());
+            }
             $processed++;
         }
 
