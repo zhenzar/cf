@@ -16,7 +16,7 @@
                 <div class="p-6">
                     @if ($mapContent)
                         <div class="overflow-x-auto">
-                            <pre class="font-mono text-xs leading-tight text-gray-800 whitespace-pre">{{ $mapContent }}</pre>
+                            <div class="font-mono text-xs leading-tight text-gray-800 whitespace-pre">{!! $mapContent !!}</div>
                         </div>
                     @else
                         <div class="text-center py-12 text-gray-500">
