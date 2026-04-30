@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CharacterController;
+use App\Http\Controllers\MapController;
 use App\Http\Controllers\MobController;
 use App\Http\Controllers\MudLogController;
 use App\Http\Controllers\ProfileController;
@@ -72,6 +73,9 @@ Route::middleware('auth')->group(function () {
     Route::post('mudlogs/upload', [MudLogController::class, 'upload'])->name('mudlogs.upload');
     Route::get('mudlogs/{mudlog}', [MudLogController::class, 'show'])->name('mudlogs.show');
     Route::post('mudlogs/{mudlog}/toggle', [MudLogController::class, 'toggleReviewed'])->name('mudlogs.toggle');
+
+    // Maps
+    Route::get('maps', [MapController::class, 'index'])->name('maps.index');
 
     // Mobs
     Route::get('mobs', [MobController::class, 'index'])->name('mobs.index');

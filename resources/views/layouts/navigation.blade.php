@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('mobs.index')" :active="request()->routeIs('mobs.*')">
                         {{ __('Mobs') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('maps.index')" :active="request()->routeIs('maps.*')">
+                        {{ __('Maps') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -89,6 +92,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('mobs.index')" :active="request()->routeIs('mobs.*')">
                 {{ __('Mobs') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('maps.index')" :active="request()->routeIs('maps.*')">
+                {{ __('Maps') }}
             </x-responsive-nav-link>
         </div>
 
