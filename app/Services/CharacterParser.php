@@ -26,8 +26,10 @@ class CharacterParser
             // [51 Storm War] Thrakal the Legend of the Battlefield
             // [37 Felar Asn] Auzlohn the Harai Goshi
             // [ 1 Svirf War] Fettle the Scrapper
+            // [51 Dwarf War] (PK) [TRIBUNAL] Banduain Stonefeet ...
 
-            if (preg_match('/\[\s*(\d+)\s+([A-Za-z\-]+)\s+([A-Za-z]+)\s*\].*?([A-Z][a-z]+)(?:\s+the\s+.+)?$/', $line, $m)) {
+            // Capture first capitalized word after optional (PK) and [TITLE] blocks
+            if (preg_match('/\[\s*(\d+)\s+([A-Za-z\-]+)\s+([A-Za-z]+)\s*\](?:\s*\(PK\))?(?:\s*\[[^\]]+\])?\s+([A-Z][a-z]+)/', $line, $m)) {
                 $name = trim($m[4]);
                 if ($name && strlen($name) > 1) {
                     $results[] = [
@@ -41,7 +43,7 @@ class CharacterParser
             }
 
             // Alternative: Star format *37 D-Elf War*
-            if (preg_match('/\*\s*(\d+)\s+([A-Za-z\-]+)\s+([A-Za-z]+)\s*\*.*?([A-Z][a-z]+)(?:\s+the\s+.+)?$/', $line, $m)) {
+            if (preg_match('/\*\s*(\d+)\s+([A-Za-z\-]+)\s+([A-Za-z]+)\s*\*(?:\s*\(PK\))?(?:\s*\[[^\]]+\])?\s+([A-Z][a-z]+)/', $line, $m)) {
                 $name = trim($m[4]);
                 if ($name && strlen($name) > 1) {
                     // Check if we already found this name

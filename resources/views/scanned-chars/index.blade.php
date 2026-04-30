@@ -30,6 +30,9 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Race</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Class</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Lvl</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Source</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Scanned At</th>
                         </tr>
@@ -40,6 +43,15 @@
                                 <td class="px-6 py-4 font-medium text-gray-900">
                                     {{ $char->name }}
                                 </td>
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    {{ $char->race ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    {{ $char->class ?? '-' }}
+                                </td>
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    {{ $char->level ?? '-' }}
+                                </td>
                                 <td class="px-6 py-4 text-sm text-gray-500 font-mono truncate max-w-md">
                                     {{ Str::limit($char->source_line, 60) }}
                                 </td>
@@ -49,7 +61,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="px-6 py-8 text-center text-gray-500">
+                                <td colspan="6" class="px-6 py-8 text-center text-gray-500">
                                     No characters scanned yet. Upload log files to populate.
                                 </td>
                             </tr>

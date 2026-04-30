@@ -221,6 +221,9 @@ class LogScanner
             if (! $exists) {
                 ScannedChar::create([
                     'name' => $charData['name'],
+                    'race' => $charData['race'] ?? null,
+                    'class' => $charData['class'] ?? null,
+                    'level' => $charData['level'] ?? null,
                     'log_file_id' => $logFile->id,
                     'source_line' => $charData['source_line'],
                 ]);

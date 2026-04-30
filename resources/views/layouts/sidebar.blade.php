@@ -6,6 +6,7 @@
         ['label' => 'Items',      'route' => 'mudlogs.items',    'match' => ['mudlogs.items', 'mudlogs.pending', 'mudlogs.pending.*']],
         ['label' => 'Areas',      'route' => 'areas.index',      'match' => ['areas.index', 'characters.areas']],
         ['label' => 'Mobs',       'route' => 'mobs.index',       'match' => ['mobs.index', 'mobs.create', 'mobs.edit', 'mobs.store', 'mobs.update', 'mobs.destroy']],
+        ['label' => 'Chars',      'route' => 'scanned-chars.index', 'match' => ['scanned-chars.*']],
     ];
 @endphp
 

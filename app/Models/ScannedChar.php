@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ScannedChar extends Model
 {
-    protected $fillable = ['name', 'log_file_id', 'source_line'];
+    protected $fillable = ['name', 'race', 'class', 'level', 'log_file_id', 'source_line'];
 
     public function logFile(): BelongsTo
     {
