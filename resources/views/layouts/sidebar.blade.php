@@ -4,8 +4,8 @@
         ['label' => 'Dashboard',  'route' => 'dashboard',        'match' => ['dashboard', 'characters.*']],
         ['label' => 'Log scans',  'route' => 'mudlogs.index',    'match' => ['mudlogs.index', 'mudlogs.show', 'mudlogs.toggle', 'mudlogs.scan', 'mudlogs.upload', 'mudlogs.destroy']],
         ['label' => 'Items',      'route' => 'mudlogs.items',    'match' => ['mudlogs.items', 'mudlogs.pending', 'mudlogs.pending.*']],
-        ['label' => 'Areas',      'route' => 'areas.index',      'match' => ['areas.index', 'characters.areas']],
         ['label' => 'Mobs',       'route' => 'mobs.index',       'match' => ['mobs.index', 'mobs.create', 'mobs.edit', 'mobs.store', 'mobs.update', 'mobs.destroy']],
+        ['label' => 'Maps',       'route' => 'maps.index',       'match' => ['maps.*']],
         ['label' => 'Chars',      'route' => 'scanned-chars.index', 'match' => ['scanned-chars.*']],
     ];
 @endphp
@@ -45,6 +45,10 @@
                 </form>
             </div>
         @endif
+        <a href="{{ route('areas.index') }}"
+           class="block text-center text-xs text-indigo-300 hover:text-indigo-200 py-1">
+            Areas {{ $activeCharacter ? '(' . $activeCharacter->name . ')' : '' }}
+        </a>
         <a href="{{ route('characters.create') }}"
            class="block text-center text-xs text-indigo-300 hover:text-indigo-200 py-1">+ New character</a>
     </div>
@@ -62,9 +66,6 @@
                class="flex items-center justify-between px-3 py-2 rounded-md
                       {{ $isActive ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
                 <span>{{ $item['label'] }}</span>
-                @if ($item['label'] === 'Areas' && $activeCharacter)
-                    <span class="text-[10px] text-gray-400">{{ $activeCharacter->name }}</span>
-                @endif
             </a>
         @endforeach
     </nav>
