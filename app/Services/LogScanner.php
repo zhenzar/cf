@@ -216,9 +216,20 @@ class LogScanner
         $chars = $this->charParser->parseCharacters($content);
 
         foreach ($chars as $charData) {
-            // Only save if not already exists (by name)
-            $exists = ScannedChar::where('name', $charData['name'])->exists();
-            if (! $exists) {
+            $existing = ScannedChar::where('name', $charData['name'])->first();
+
+            if ($existing) {
+                // Update if new level is higher
+                if (($charData['level'] ?? 0) > ($existing->level ?? 0)) {
+                    $existing->update([
+                        'race' => $charData['race'] ?? $existing->race,
+                        'class' => $charData['class'] ?? $existing->class,
+                        'level' => $charData['level'],
+                        'log_file_id' => $logFile->id,
+                        'source_line' => $charData['source_line'],
+                    ]);
+                }
+            } else {
                 ScannedChar::create([
                     'name' => $charData['name'],
                     'race' => $charData['race'] ?? null,
