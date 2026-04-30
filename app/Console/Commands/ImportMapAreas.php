@@ -25,28 +25,43 @@ class ImportMapAreas extends Command
             return 1;
         }
 
-        // Parse area links from the map
-        $this->parseAreaLinks($html);
+        // Parse area links from the map (now with wiki titles)
+        $this->parseAreaLinksWithWikiTitles($html);
 
         $this->info('Found ' . count($this->mapAreaLinks) . ' unique areas on the map.');
 
-        // Get existing areas
-        $existingAreas = Area::pluck('name')->map(fn($name) => strtolower($name))->all();
-        $existingAreaUrls = Area::whereNotNull('url')->pluck('url')->map(fn($url) => strtolower($url))->all();
+        // Build comprehensive existing area lookup
+        $existingAreas = $this->buildExistingAreaLookup();
 
         // Find missing areas
         $missingAreas = [];
-        foreach ($this->mapAreaLinks as $areaName => $url) {
-            $normalizedName = strtolower($areaName);
-            $normalizedUrl = strtolower($url);
+        foreach ($this->mapAreaLinks as $wikiTitle => $data) {
+            $url = $data['url'];
+            $displayText = $data['display_text'];
 
-            // Check if area exists by name or URL
-            $exists = in_array($normalizedName, $existingAreas) ||
-                     in_array($normalizedUrl, $existingAreaUrls);
-
-            if (!$exists) {
-                $missingAreas[$areaName] = $url;
+            // Check if area exists by wiki title, URL, or display text
+            if ($this->areaExists($wikiTitle, $url, $displayText, $existingAreas)) {
+                continue;
             }
+
+            // Skip fragment names (parts of larger names)
+            if ($this->isFragmentName($displayText, $wikiTitle)) {
+                continue;
+            }
+
+            // Use the wiki page title as the area name (more reliable than display text)
+            $areaName = $this->cleanWikiTitle($wikiTitle);
+
+            // Skip if still matches an existing area after cleaning
+            if ($this->areaExists($areaName, $url, $areaName, $existingAreas)) {
+                continue;
+            }
+
+            $missingAreas[$wikiTitle] = [
+                'name' => $areaName,
+                'url' => $url,
+                'display_text' => $displayText,
+            ];
         }
 
         if (empty($missingAreas)) {
@@ -55,8 +70,8 @@ class ImportMapAreas extends Command
         }
 
         $this->info('Found ' . count($missingAreas) . ' missing areas:');
-        foreach ($missingAreas as $name => $url) {
-            $this->line("  - {$name} ({$url})");
+        foreach ($missingAreas as $wikiTitle => $data) {
+            $this->line("  - {$data['name']} (Wiki: {$wikiTitle})");
         }
 
         if ($this->option('dry-run')) {
@@ -66,7 +81,10 @@ class ImportMapAreas extends Command
 
         // Import missing areas
         $imported = 0;
-        foreach ($missingAreas as $name => $url) {
+        foreach ($missingAreas as $wikiTitle => $data) {
+            $name = $data['name'];
+            $url = $data['url'];
+
             // Determine realm from the area name or URL
             $realm = $this->guessRealm($name, $url);
 
@@ -90,6 +108,172 @@ class ImportMapAreas extends Command
     }
 
     /**
+     * Build lookup map for existing areas.
+     */
+    private function buildExistingAreaLookup(): array
+    {
+        $lookup = [
+            'names' => [],
+            'urls' => [],
+            'wiki_titles' => [],
+        ];
+
+        $areas = Area::all();
+        foreach ($areas as $area) {
+            // Store normalized name
+            $normalizedName = $this->normalizeForLookup($area->name);
+            $lookup['names'][$normalizedName] = $area;
+
+            // Store URL
+            if ($area->url) {
+                $lookup['urls'][strtolower($area->url)] = $area;
+                // Also store wiki title from URL
+                $wikiTitle = $this->extractWikiTitle($area->url);
+                if ($wikiTitle) {
+                    $lookup['wiki_titles'][$wikiTitle] = $area;
+                }
+            }
+        }
+
+        return $lookup;
+    }
+
+    /**
+     * Check if area exists in the lookup.
+     */
+    private function areaExists(string $wikiTitle, string $url, string $displayText, array $lookup): bool
+    {
+        $normalizedWikiTitle = strtolower($wikiTitle);
+        $normalizedUrl = strtolower($url);
+        $normalizedDisplay = $this->normalizeForLookup($displayText);
+        $cleanedName = $this->normalizeForLookup($this->cleanWikiTitle($wikiTitle));
+
+        // Check by wiki title
+        if (isset($lookup['wiki_titles'][$normalizedWikiTitle])) {
+            return true;
+        }
+
+        // Check by URL
+        if (isset($lookup['urls'][$normalizedUrl])) {
+            return true;
+        }
+
+        // Check by display text
+        if (isset($lookup['names'][$normalizedDisplay])) {
+            return true;
+        }
+
+        // Check by cleaned wiki title
+        if (isset($lookup['names'][$cleanedName])) {
+            return true;
+        }
+
+        // Partial matching
+        foreach ($lookup['names'] as $name => $area) {
+            if (stripos($name, $normalizedDisplay) !== false || stripos($normalizedDisplay, $name) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Normalize string for lookup comparison.
+     */
+    private function normalizeForLookup(string $text): string
+    {
+        return strtolower(str_replace([' ', "'", '-', '_'], '', $text));
+    }
+
+    /**
+     * Clean wiki title to create proper area name.
+     */
+    private function cleanWikiTitle(string $wikiTitle): string
+    {
+        // Decode URL encoding
+        $title = urldecode($wikiTitle);
+
+        // Replace underscores and dashes with spaces
+        $title = str_replace(['_', '-'], ' ', $title);
+
+        // Remove common prefixes that aren't part of the name
+        $prefixes = ['The', 'A', 'An'];
+        foreach ($prefixes as $prefix) {
+            if (stripos($title, $prefix . ' ') === 0) {
+                // Keep it, just capitalize properly
+                break;
+            }
+        }
+
+        // Capitalize each word
+        return Str::title(trim($title));
+    }
+
+    /**
+     * Check if this is a fragment name (part of a larger area name).
+     */
+    private function isFragmentName(string $displayText, string $wikiTitle): bool
+    {
+        $text = strtolower(trim($displayText));
+        $wiki = strtolower(trim($wikiTitle));
+
+        // Common fragment words that shouldn't be standalone areas
+        $fragments = [
+            'the', 'of', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'with',
+            'and', 'or', 'but', 'road', 'path', 'trail', 'keep', 'castle',
+            'village', 'forest', 'mountains', 'plains', 'city', 'grove',
+            'ruins', 'mines', 'temple', 'tower', 'sewers', 'woods', 'swamp',
+            'island', 'cove', 'harbor', 'modan', 'galadon', 'udgaard',
+            'hamsah', 'voralia', 'scarabaeus', 'thror', 'underdark',
+            'ashesof', 'citadelof', 'mansionof', 'pyramidof', 'villageof',
+            'loch', 'plains', 'fields', 'lake', 'river', 'sea', 'ocean',
+            'north', 'south', 'east', 'west', 'northern', 'southern',
+            'eastern', 'western', 'upper', 'lower', 'ancient', 'old',
+            'new', 'dark', 'shadow', 'black', 'white', 'red', 'green',
+            'blue', 'silver', 'gold', 'crystal', 'frozen', 'frigid',
+            'burning', 'haunted', 'forgotten', 'abandoned', 'hidden',
+            'lost', 'deep', 'high', 'low', 'great', 'little', 'big',
+        ];
+
+        // If display text is very different from wiki title, it's likely a fragment
+        $displayNormalized = $this->normalizeForLookup($displayText);
+        $wikiNormalized = $this->normalizeForLookup($wikiTitle);
+
+        // If wiki title contains the display text, display text is likely a fragment
+        if (strlen($displayText) < 5 && !str_contains($wiki, $text)) {
+            return true;
+        }
+
+        // Check if it's just a fragment word
+        if (in_array($text, $fragments)) {
+            return true;
+        }
+
+        // Check if display text is a substring of wiki title (fragment)
+        if (strlen($displayText) < strlen($wikiTitle) && str_contains($wiki, $text)) {
+            // But allow if it's the main part (e.g., "Azhan" in "PyramidOfAzhan")
+            if (strlen($displayText) >= 6) {
+                return false;
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Extract wiki title from URL.
+     */
+    private function extractWikiTitle(string $url): ?string
+    {
+        if (preg_match('/title=([^&]+)/', $url, $m)) {
+            return strtolower(urldecode($m[1]));
+        }
+        return null;
+    }
+
+    /**
      * Fetch the WorldMap HTML from the wiki.
      */
     private function fetchWorldMapHtml(): ?string
@@ -109,9 +293,9 @@ class ImportMapAreas extends Command
     }
 
     /**
-     * Parse area links from the WorldMap HTML.
+     * Parse area links from the WorldMap HTML with wiki titles.
      */
-    private function parseAreaLinks(string $html): void
+    private function parseAreaLinksWithWikiTitles(string $html): void
     {
         // Find all links in the map content
         // The map is in a <pre> block with HTML wiki links
@@ -119,41 +303,27 @@ class ImportMapAreas extends Command
             $mapContent = $m[1];
 
             // Find all HTML wiki links in the map
-            // Pattern matches <a href="http://wiki.qhcf.net/index.php?title=PageName" ...>Display Text</a>
-            preg_match_all('/<a[^>]+href="(http:\/\/wiki\.qhcf\.net\/index\.php\?title=[^"]+)"[^>]*>([^<]+)<\/a>/', $mapContent, $matches, PREG_SET_ORDER);
+            // Pattern captures both URL (with wiki title) and display text
+            preg_match_all('/<a[^>]+href="(http:\/\/wiki\.qhcf\.net\/index\.php\?title=([^"&]+)[^"]*)"[^>]*>([^<]+)<\/a>/', $mapContent, $matches, PREG_SET_ORDER);
 
             foreach ($matches as $match) {
                 $url = $match[1];
-                $linkText = trim($match[2]);
-
-                // Clean up the area name
-                $areaName = $this->cleanAreaName($linkText);
-
-                // Skip very short names (likely single letters or connectors)
-                if (strlen($areaName) < 3) {
-                    continue;
-                }
-
-                // Skip common connector words and partial matches
-                $skipWords = ['the', 'and', 'of', 'to', 'in', 'a', 'an', 's', 't', 'r', 'd', 'g', 'l', 'm', 'n', 'k', 'i', 'o', 'e', 'w', 'h', 'c', 'u', 'p', 'v', 'f', 'b', 'th', 'st', 'rd', 'nd'];
-                if (in_array(strtolower($areaName), $skipWords)) {
-                    continue;
-                }
-
-                // Skip if it's just a partial word fragment
-                if (preg_match('/^[a-z]{1,2}$/i', $areaName)) {
-                    continue;
-                }
+                $wikiTitle = urldecode($match[2]);  // The actual wiki page title
+                $displayText = trim($match[3]);      // The display text on the map
 
                 // Skip author names
-                $skipNames = ['RobertDunn', 'Zendrac', 'Yhorian', 'DurNominator', 'Robert', 'Dunn', 'Zendra', 'Yhoria'];
-                if (in_array($areaName, $skipNames)) {
+                $skipNames = ['RobertDunn', 'Zendrac', 'Yhorian', 'DurNominator', 'Robert', 'Dunn'];
+                if (in_array($wikiTitle, $skipNames) || in_array($displayText, $skipNames)) {
                     continue;
                 }
 
-                // Store the area
-                if (!isset($this->mapAreaLinks[$areaName])) {
-                    $this->mapAreaLinks[$areaName] = $url;
+                // Store by wiki title (more reliable than display text)
+                if (!isset($this->mapAreaLinks[$wikiTitle])) {
+                    $this->mapAreaLinks[$wikiTitle] = [
+                        'url' => $url,
+                        'display_text' => $displayText,
+                        'wiki_title' => $wikiTitle,
+                    ];
                 }
             }
         }
